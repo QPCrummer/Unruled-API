@@ -4,7 +4,6 @@ import mc.recraftors.unruled_api.StringRule;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -16,7 +15,7 @@ public class TextRuleWidget extends NamedRuleWidget {
 
     public TextRuleWidget(Text name, List<OrderedText> description, String ruleName, StringRule rule, EditGameRulesScreen screen) {
         super(description, name, screen);
-        this.buttonWidget = new ButtonWidget(10, 5, 44, 20, LiteralText.EMPTY.copy().append("NYI").formatted(Formatting.RED), button -> {});
+        this.buttonWidget = new ButtonWidget(10, 5, 44, 20, Text.literal("NYI").formatted(Formatting.RED), button -> {});
         this.children.add(this.buttonWidget);
     }
 
