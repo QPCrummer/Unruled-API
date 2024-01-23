@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[38,)"
+license="GNU GPL 3.0"
+issueTrackerURL="https://github.com/RecraftorsMC/unruled_api/issues"
+[[mods]]
+modId="unruled_api"
+version="${version}"
+displayName="unruled_api"
+displayURL="https://github.com/RecraftorsMC/unruled_api"
+logoFile="icon.png"
+authors="Recraftors Team, Nerjal Nosk"
+description="Expands on the vanilla gamerules to add new gamerules types for other mods to use"
+[[dependencies.unruled_api]]
+   modId="forge"
+   mandatory=true
+   versionRange="[38,)"
+   ordering="NONE"
+   side="BOTH"
+[[dependencies.unruled_api]]
+   modId="minecraft"
+   mandatory=true
+   versionRange="[1.18,)"
+   ordering="NONE"
+   side="BOTH"
