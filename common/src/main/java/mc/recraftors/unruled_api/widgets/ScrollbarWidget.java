@@ -3,6 +3,7 @@ package mc.recraftors.unruled_api.widgets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mc.recraftors.unruled_api.UnruledApiClient;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
@@ -48,30 +49,31 @@ public class ScrollbarWidget extends ClickableWidget {
 
     private boolean checkHovered(double mouseX, double mouseY){
         if(horizontal){
-            return mouseX >= this.x + pos * (length-barLength) && mouseY >= this.y && mouseX < this.x + pos * (length-barLength) + barLength && mouseY < this.y + this.height;
+            return mouseX >= this.getX() + pos * (length-barLength) && mouseY >= this.getY() && mouseX < this.getX() + pos * (length-barLength) + barLength && mouseY < this.getY() + this.height;
         } else {
-            return mouseX >= this.x && mouseY >= this.y + pos * (length-barLength) && mouseX < this.x + this.width && mouseY < this.y + pos * (length-barLength) + barLength;
+            return mouseX >= this.getX() && mouseY >= this.getY() + pos * (length-barLength) && mouseX < this.getX() + this.width && mouseY < this.getY() + pos * (length-barLength) + barLength;
         }
     }
 
-    private void renderFrame(MatrixStack matrices) {
+    private void renderFrame(DrawContext context) {
         if (horizontal) {
             RenderSystem.setShaderTexture(0, UnruledApiClient.SCROLLBAR_HORIZONTAL);
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-            drawTexture(matrices, x, y, 0, 0, width / 2, height, 256, 30);
-            drawTexture(matrices, x + width / 2, y, 256 - width / 2f, 0, width / 2, height, 256, 30);
+            /*drawTexture(context, getX(), getY(), 0, 0, width / 2, height, 256, 30);
+            drawTexture(context, getX() + width / 2, getY(), 256 - width / 2f, 0, width / 2, height, 256, 30);*/
         } else {
             RenderSystem.setShaderTexture(0, UnruledApiClient.SCROLLBAR_VERTICAL);
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-            drawTexture(matrices, x, y, 0, 0, width, height / 2, 30, 256);
-            drawTexture(matrices, x, y + height / 2, 0, 256 - height / 2f, width, height / 2, 30, 256);
+            /*drawTexture(context, UnruledApiClient.SCROLLBAR_HORIZONTAL, getX(), getY(), getY() + height / 2, 0, 256 - height / 2, width, height, 30, 256);
+            drawTexture(context, getX(), getY(), 0, 0, width, height / 2, 30, 256);
+            drawTexture(context, getX(), getY() + height / 2, 0, 256 - height / 2f, width, height / 2, 30, 256);*/
         }
     }
 
-    private void renderSlider(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    private void renderSlider(DrawContext context, int mouseX, int mouseY, float delta) {
+        //RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -81,28 +83,14 @@ public class ScrollbarWidget extends ClickableWidget {
         if (horizontal) {
             RenderSystem.setShaderTexture(0, UnruledApiClient.SCROLLBAR_HORIZONTAL);
 
-            drawTexture(matrices, x + (int)(pos * (length - barLength)), y, 0, 10f + i, barLength / 2, height, 256, 30);
-            drawTexture(matrices, x + (int)(pos * (length - barLength)) + barLength / 2, y, 256 - barLength / 2f, 10f + i, barLength / 2, height, 256, 30);
+            /*drawTexture(context, getX() + (int)(pos * (length - barLength)), getY(), 0, 10f + i, barLength / 2, height, 256, 30);
+            drawTexture(context, getX() + (int)(pos * (length - barLength)) + barLength / 2, getY(), 256 - barLength / 2f, 10f + i, barLength / 2, height, 256, 30);*/
         } else {
             RenderSystem.setShaderTexture(0, UnruledApiClient.SCROLLBAR_VERTICAL);
 
-            drawTexture(matrices, x, y + (int)(pos * (length - barLength)), 10f + i, 0, width, barLength / 2, 30, 256);
-            drawTexture(matrices, x, y, (int)(pos * (length - barLength)) + barLength / 2, 10f + i, 256 - barLength / 2f, width, barLength / 2, 30, 256);
+            /*drawTexture(context, getX(), getY() + (int)(pos * (length - barLength)), 10f + i, 0, width, barLength / 2, 30, 256);
+            drawTexture(context, getX(), getY(), (int)(pos * (length - barLength)) + barLength / 2, 10f + i, 256 - barLength / 2f, width, barLength / 2, 30, 256);*/
         }
-    }
-
-    @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        render(matrices, mouseX, mouseY, delta);
-    }
-
-    @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        if (!this.visible) return;
-        this.hovered = checkHovered(mouseX, mouseY);
-
-        this.renderFrame(matrices);
-        this.renderSlider(matrices, mouseX, mouseY, delta);
     }
 
     @Override
@@ -130,6 +118,15 @@ public class ScrollbarWidget extends ClickableWidget {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+        if (!this.visible) return;
+        this.hovered = checkHovered(mouseX, mouseY);
+
+        this.renderFrame(context);
+        this.renderSlider(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -182,6 +179,7 @@ public class ScrollbarWidget extends ClickableWidget {
     }
 
     @Override
-    public void appendNarrations(NarrationMessageBuilder builder) {
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+
     }
 }

@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[38,)"
+loaderVersion="[46,)"
 license="GNU GPL 3.0"
 issueTrackerURL="https://github.com/RecraftorsMC/unruled_api/issues"
 [[mods]]
@@ -13,12 +13,12 @@ description="Expands on the vanilla gamerules to add new gamerules types for oth
 [[dependencies.unruled_api]]
    modId="forge"
    mandatory=true
-   versionRange="[43,)"
+   versionRange="[46,)"
    ordering="NONE"
    side="BOTH"
 [[dependencies.unruled_api]]
    modId="minecraft"
    mandatory=true
-   versionRange="[1.19,)"
+   versionRange="[1.20,)"
    ordering="NONE"
    side="BOTH"

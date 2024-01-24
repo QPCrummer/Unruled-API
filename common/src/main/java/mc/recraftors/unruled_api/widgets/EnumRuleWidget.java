@@ -1,9 +1,9 @@
 package mc.recraftors.unruled_api.widgets;
 
 import mc.recraftors.unruled_api.EnumRule;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
@@ -24,10 +24,10 @@ public class EnumRuleWidget <T extends Enum<T>> extends NamedRuleWidget {
 
     @SuppressWarnings("SuspiciousNameCombination")
     @Override
-    public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-        this.drawName(matrices, y, x);
-        this.valuesWidget.x = x + entryWidth - 45;
-        this.valuesWidget.y = y;
-        this.valuesWidget.render(matrices, mouseX, mouseY, tickDelta);
+    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        this.drawName(context, y, x);
+        this.valuesWidget.setX(x + entryWidth - 45);
+        this.valuesWidget.setY(y);
+        this.valuesWidget.render(context, mouseX, mouseY, tickDelta);
     }
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import mc.recraftors.unruled_api.utils.ClientProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
@@ -47,13 +48,13 @@ public abstract class NamedRuleWidget extends EditGameRulesScreen.AbstractRuleWi
         return children;
     }
 
-    @SuppressWarnings("resource")
-    protected void drawName(MatrixStack matrices, int x, int y) {
+    @SuppressWarnings({"resource", "SuspiciousNameCombination"})
+    protected void drawName(DrawContext context, int x, int y) {
         if (this.name.size() == 1) {
-            ((ClientProvider)screen).unruled_getClient().textRenderer.draw(matrices, this.name.get(0), y, (x + 5), 0xFFFFFF);
+            context.drawText(((ClientProvider)screen).unruled_getClient().textRenderer, this.name.get(0), y, (x + 5), 0xFFFFFF, false);
         } else if (this.name.size() >= 2) {
-            ((ClientProvider)screen).unruled_getClient().textRenderer.draw(matrices, this.name.get(0), y, x, 0xFFFFFF);
-            ((ClientProvider)screen).unruled_getClient().textRenderer.draw(matrices, this.name.get(1), y, (x + 10), 0xFFFFFF);
+            context.drawText(((ClientProvider)screen).unruled_getClient().textRenderer, this.name.get(0), y, x, 0xFFFFFF, false);
+            context.drawText(((ClientProvider)screen).unruled_getClient().textRenderer, this.name.get(1), y, (x + 10), 0xFFFFFF, false);
         }
     }
 }

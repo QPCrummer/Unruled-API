@@ -27,7 +27,7 @@ public class MultiLineTextFieldWidget extends TextFieldWidget implements Element
         super(textRenderer, x, y, width, height, text);
     }
 
-    @Override
+    /*@Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (!visible) return;
         if (super.drawsBackground()) {
@@ -35,7 +35,7 @@ public class MultiLineTextFieldWidget extends TextFieldWidget implements Element
             TextFieldWidget.fill(matrices, x, y, x + width, y + height, -16777216);
         }
         int color = isEditable() ? editableColor : uneditableColor;
-    }
+    }*/
 
     public void setScroll(double value) {
         this.lineScroll = (int)Math.max(Math.round((lines.size() - visibleLines) * value), 0);
