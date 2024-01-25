@@ -13,9 +13,9 @@ For consistency, methods have also been created to allow instantiating vanilla g
 Example:
 ```java
     public void gamerulesRegistration() {
-        myGameRule = registerGamerule("my_gamerule", UnruledApi.createFloat(1.5));
-        myOtherGameRule = registerGamerule("my_other_gamerule", UnruledApi.createString("some text"));
-        myLastGameRule = registerGamerule("my_last_gamerule", UnruledApi.createBoolean(false, (server, rule) -> {
+        myGameRule = registerGamerule("my_gamerule", category, UnruledApi.createFloat(1.5));
+        myOtherGameRule = registerGamerule("my_other_gamerule", category, UnruledApi.createString("some text"));
+        myLastGameRule = registerGamerule("my_last_gamerule", category, UnruledApi.createBoolean(false, (server, rule) -> {
             onLastRuleChange(server, rule);
         }));
     }
