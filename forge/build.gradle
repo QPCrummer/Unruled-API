@@ -25,6 +25,13 @@ def commonProject = rootProject.project("common")
 
 loom {
     accessWidenerPath = commonProject.file("src/main/resources/${commonProject.mod_id}.accesswidener")
+
+    forge {
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+
+        mixinConfig "${commonProject.mod_id}.mixins.json"
+    }
 }
 
 processResources {
