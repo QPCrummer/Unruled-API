@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "unruled_api",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "unruled_api",
+  "name": "Unruled Api",
   "description": "Expands on the vanilla gamerules to add new gamerules types for other mods to use",
   "authors": [
     {
@@ -30,5 +30,5 @@
     "fabricloader": ">=0.14.20",
     "minecraft": ">=1.20"
   },
-  "accessWidener": "unruled.accesswidener"
+  "accessWidener": "${mod_id}.accesswidener"
 }
