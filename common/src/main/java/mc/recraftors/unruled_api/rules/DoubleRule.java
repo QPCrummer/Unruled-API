@@ -1,7 +1,8 @@
-package mc.recraftors.unruled_api;
+package mc.recraftors.unruled_api.rules;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import mc.recraftors.unruled_api.UnruledApi;
 import mc.recraftors.unruled_api.utils.IGameRulesVisitor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;

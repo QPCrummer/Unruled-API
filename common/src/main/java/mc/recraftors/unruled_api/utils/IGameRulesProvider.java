@@ -1,6 +1,7 @@
 package mc.recraftors.unruled_api.utils;
 
-import mc.recraftors.unruled_api.*;
+import mc.recraftors.unruled_api.rules.*;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.world.GameRules;
 
 /**
@@ -24,6 +25,10 @@ public interface IGameRulesProvider {
     }
 
     default String unruled_getString(GameRules.Key<StringRule> key) {
+        return null;
+    }
+
+    default EntitySelector unruled_getEntitySelector(GameRules.Key<EntitySelectorRule> key) {
         return null;
     }
 }

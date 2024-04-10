@@ -1,6 +1,6 @@
 package mc.recraftors.unruled_api.widgets;
 
-import mc.recraftors.unruled_api.rules.DoubleRule;
+import mc.recraftors.unruled_api.rules.EntitySelectorRule;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -10,12 +10,13 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 
-public class DoubleRuleWidget extends NamedRuleWidget {
+public class EntitySelectorRuleWidget extends NamedRuleWidget {
     private final TextFieldWidget valueWidget;
 
-    public DoubleRuleWidget(Text name, List<OrderedText> description, String ruleName, DoubleRule rule, EditGameRulesScreen screen) {
+    public EntitySelectorRuleWidget(Text name, List<OrderedText> description, String ruleName, EntitySelectorRule rule, EditGameRulesScreen screen) {
         super(description, name, screen);
         this.valueWidget = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 10, 5, 42, 20, name.copy().append("\n").append(ruleName).append("\n"));
+        this.valueWidget.setMaxLength(1024); // Do you actually need a longer entity selector?
         this.valueWidget.setText(rule.serialize());
         this.valueWidget.setChangedListener(val -> {
             if (rule.validate(val)) {

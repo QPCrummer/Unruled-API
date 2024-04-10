@@ -1,4 +1,4 @@
-package mc.recraftors.unruled_api;
+package mc.recraftors.unruled_api.rules;
 
 import net.minecraft.world.GameRules;
 

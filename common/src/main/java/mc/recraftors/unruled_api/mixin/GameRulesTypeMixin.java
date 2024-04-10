@@ -3,7 +3,7 @@ package mc.recraftors.unruled_api.mixin;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import mc.recraftors.unruled_api.utils.EnumArgSupplier;
-import mc.recraftors.unruled_api.EnumRule;
+import mc.recraftors.unruled_api.rules.EnumRule;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;

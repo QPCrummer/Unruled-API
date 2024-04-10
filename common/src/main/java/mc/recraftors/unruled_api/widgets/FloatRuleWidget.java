@@ -1,6 +1,6 @@
 package mc.recraftors.unruled_api.widgets;
 
-import mc.recraftors.unruled_api.FloatRule;
+import mc.recraftors.unruled_api.rules.FloatRule;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;

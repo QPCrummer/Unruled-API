@@ -1,4 +1,4 @@
-package mc.recraftors.unruled_api;
+package mc.recraftors.unruled_api.rules;
 
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -108,5 +108,6 @@ public class StringRule extends GameRules.Rule<StringRule> {
         String input = rule.get();
         if (breaksMaxLength(input)) input = input.substring(0, this.getMaxLength());
         this.set(input, server);
+        this.changed(server);
     }
 }
