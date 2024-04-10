@@ -1,4 +1,4 @@
-package mc.recraftors.unruled_api;
+package mc.recraftors.unruled_api.rules;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;

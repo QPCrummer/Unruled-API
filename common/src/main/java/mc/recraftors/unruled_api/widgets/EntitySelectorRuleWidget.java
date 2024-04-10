@@ -1,22 +1,22 @@
 package mc.recraftors.unruled_api.widgets;
 
-import mc.recraftors.unruled_api.rules.FloatRule;
+import mc.recraftors.unruled_api.rules.EntitySelectorRule;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FloatRuleWidget extends NamedRuleWidget {
+public class EntitySelectorRuleWidget extends NamedRuleWidget {
     private final TextFieldWidget valueWidget;
 
-    public FloatRuleWidget(Text name, @Nullable List<OrderedText> description, String ruleName, FloatRule rule, EditGameRulesScreen screen) {
+    public EntitySelectorRuleWidget(Text name, List<OrderedText> description, String ruleName, EntitySelectorRule rule, EditGameRulesScreen screen) {
         super(description, name, screen);
         this.valueWidget = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, 10, 5, 42, 20, name.copy().append("\n").append(ruleName).append("\n"));
+        this.valueWidget.setMaxLength(1024); // Do you actually need a longer entity selector?
         this.valueWidget.setText(rule.serialize());
         this.valueWidget.setChangedListener(val -> {
             if (rule.validate(val)) {
@@ -30,7 +30,6 @@ public class FloatRuleWidget extends NamedRuleWidget {
         this.children.add(this.valueWidget);
     }
 
-    @SuppressWarnings("SuspiciousNameCombination")
     @Override
     public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
         this.drawName(context, y, x);

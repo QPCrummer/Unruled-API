@@ -1,11 +1,10 @@
 package mc.recraftors.unruled_api.widgets;
 
-import mc.recraftors.unruled_api.StringRule;
+import mc.recraftors.unruled_api.rules.StringRule;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 

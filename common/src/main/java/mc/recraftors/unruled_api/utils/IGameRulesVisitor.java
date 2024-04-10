@@ -1,6 +1,6 @@
 package mc.recraftors.unruled_api.utils;
 
-import mc.recraftors.unruled_api.*;
+import mc.recraftors.unruled_api.rules.*;
 import net.minecraft.world.GameRules;
 
 public interface IGameRulesVisitor {
@@ -15,4 +15,6 @@ public interface IGameRulesVisitor {
     default void unruled_visitString(GameRules.Key<StringRule> key, GameRules.Type<StringRule> type) {}
 
     default void unruled_visitText(GameRules.Key<StringRule> key, GameRules.Type<StringRule> type) {}
+
+    default void unruled_visitEntitySelector(GameRules.Key<EntitySelectorRule> key, GameRules.Type<EntitySelectorRule> type) {}
 }

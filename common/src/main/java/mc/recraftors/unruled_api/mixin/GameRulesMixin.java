@@ -1,7 +1,8 @@
 package mc.recraftors.unruled_api.mixin;
 
-import mc.recraftors.unruled_api.*;
+import mc.recraftors.unruled_api.rules.*;
 import mc.recraftors.unruled_api.utils.IGameRulesProvider;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.world.GameRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,6 +33,11 @@ public abstract class GameRulesMixin implements IGameRulesProvider {
 
     @Override
     public String unruled_getString(GameRules.Key<StringRule> key) {
+        return this.get(key).get();
+    }
+
+    @Override
+    public EntitySelector unruled_getEntitySelector(GameRules.Key<EntitySelectorRule> key) {
         return this.get(key).get();
     }
 }

@@ -1,6 +1,6 @@
 package mc.recraftors.unruled_api.widgets;
 
-import mc.recraftors.unruled_api.EnumRule;
+import mc.recraftors.unruled_api.rules.EnumRule;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;

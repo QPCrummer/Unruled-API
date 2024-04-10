@@ -1,6 +1,6 @@
 package mc.recraftors.unruled_api.widgets;
 
-import mc.recraftors.unruled_api.LongRule;
+import mc.recraftors.unruled_api.rules.LongRule;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
