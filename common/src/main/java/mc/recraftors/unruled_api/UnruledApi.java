@@ -414,6 +414,63 @@ public class UnruledApi {
 	}
 
 	/**
+	 * Creates and registers a new String gamerule with the specified default value,
+	 * maximum length and change callback, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerString(String name, Category category, int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
+		return register(name, category, createString(maxLength, initialValue, changeCallback));
+	}
+
+	/**
+	 * Creates and registers a new String gamerule with the specified default value
+	 * and change callback, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerString(String name, Category category, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
+		return register(name, category, createString(initialValue, changeCallback));
+	}
+
+	/**
+	 * Creates and registers a new String gamerule with the specified default value
+	 * and maximum length, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerString(String name, Category category, int maxLength, String initialValue) {
+		return register(name, category, createString(maxLength, initialValue));
+	}
+
+	/**
+	 * Creates and registers a new String gamerule with the specified default value,
+	 * at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _ -> new")
+	@NotNull public static Key<StringRule> registerString(String name, Category category, String initialValue) {
+		return register(name, category, createString(initialValue));
+	}
+
+	/**
 	 * Creates a new Text gamerule with the specified default value, maximum length
 	 * and change callback.
 	 * @param maxLength The new gamerule's maximum length.
@@ -460,13 +517,60 @@ public class UnruledApi {
 	}
 
 	/**
-	 * Creates a new Entity Selector gamerule with the specified default value.
+	 * Creates and registers a new Text gamerule with the specified default value,
+	 * maximum length and change callback, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
-	 * @return The newly created gamerule's reference.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @return The new rule registration key.
 	 */
-	@Contract("_ -> new")
-	@NotNull public static Type<EntitySelectorRule> createEntitySelector(String initialValue) {
-		return EntitySelectorRule.create(initialValue);
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerText(String name, Category category, int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
+		return register(name, category, createText(maxLength, initialValue, changeCallback));
+	}
+
+	/**
+	 * Creates and registers a new Text gamerule with the specified default value
+	 * and change callback, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerText(String name, Category category, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
+		return register(name, category, createText(initialValue, changeCallback));
+	}
+
+	/**
+	 * Creates and registers a new Text gamerule with the specified default value and
+	 * maximum length, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerText(String name, Category category, int maxLength, String initialValue) {
+		return register(name, category, createText(maxLength, initialValue));
+	}
+
+	/**
+	 * Creates and registers a new Text gamerule with the specified default value,
+	 * at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _ -> new")
+	@NotNull public static Key<StringRule> registerText(String name, Category category, String initialValue) {
+		return register(name, category, createText(initialValue));
 	}
 
 	/**
@@ -478,5 +582,42 @@ public class UnruledApi {
 	@Contract("_, _ -> new")
 	@NotNull public static Type<EntitySelectorRule> createEntitySelector(String initialValue, BiConsumer<MinecraftServer, EntitySelectorRule> changeCallback) {
 		return EntitySelectorRule.create(initialValue, changeCallback);
+	}
+
+	/**
+	 * Creates a new Entity Selector gamerule with the specified default value.
+	 * @param initialValue The new gamerule's default value.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract("_ -> new")
+	@NotNull public static Type<EntitySelectorRule> createEntitySelector(String initialValue) {
+		return EntitySelectorRule.create(initialValue);
+	}
+
+	/**
+	 * Creates and registers a new Entity Selector gamerule with the specified default value
+	 * and change callback, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<EntitySelectorRule> registerEntitySelectorRule(String name, Category category, String initialValue, BiConsumer<MinecraftServer, EntitySelectorRule> changeCallback) {
+		return register(name, category, createEntitySelector(initialValue, changeCallback));
+	}
+
+	/**
+	 * Creates and registers a new Entity Selector gamerule with the specified default value,
+	 * at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _ -> new")
+	@NotNull public static Key<EntitySelectorRule> registerEntitySelectorRule(String name, Category category, String initialValue) {
+		return register(name, category, createEntitySelector(initialValue));
 	}
 }
