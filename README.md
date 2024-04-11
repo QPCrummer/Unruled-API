@@ -21,6 +21,16 @@ Example:
     }
 ```
 
+Now, for your very own convenience (since 0.4), with additional creation and registration method!
+
+```java
+    public void registerCustomGamerules() {
+        MY_BOOLEAN_RULE = UnruledApi.register("gamerule_name", someCategory, UnruledApi.createBoolean(false));
+        MY_FLOAT_RULE = UnruledApi.registerFloat("other_gamerule_name", sameOrOtherCategory, 0.5);
+        MY_ENUM_RULE = UnruledApi.registerEnum("yet_another_gamerule_name", yetAgainACategory, MyEnumClass.class, MyEnumClass.SOME_VALUE);
+    }
+```
+
 Each rule can also be easily consulted using the `IGameRulesProvider` interface.
 
 Example:
