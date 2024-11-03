@@ -1,8 +1,11 @@
 package mc.recraftors.unruled_api.rules;
 
+import mc.recraftors.unruled_api.utils.IGameruleAdapter;
+import mc.recraftors.unruled_api.utils.IGameruleValidator;
 import net.minecraft.world.GameRules;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Technically functional text gamerule for rules beyond 128 characters long.
@@ -11,11 +14,14 @@ import java.util.Objects;
  */
 public class TextRule extends StringRule {
     private final int maxTextLength;
-    public TextRule(GameRules.Type<StringRule> type, int maxLength, String initialValue) {
-        super(type, 1, "");
+    public TextRule(GameRules.Type<StringRule> type, int maxLength, String initialValue, IGameruleValidator<String> validator, IGameruleAdapter<String> adapter) {
+        super(type, 1, "", validator, adapter);
         Objects.requireNonNull(initialValue);
         this.maxTextLength = maxLength;
         this.validate(initialValue);
+    }
+    public TextRule(GameRules.Type<StringRule> type, int maxLength, String initialValue) {
+        this(type, maxLength, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     @Override

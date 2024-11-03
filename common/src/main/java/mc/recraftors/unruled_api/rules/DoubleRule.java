@@ -3,21 +3,36 @@ package mc.recraftors.unruled_api.rules;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.UnruledApi;
+import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import mc.recraftors.unruled_api.utils.IGameRulesVisitor;
+import mc.recraftors.unruled_api.utils.IGameruleAdapter;
+import mc.recraftors.unruled_api.utils.IGameruleValidator;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 @SuppressWarnings("unused")
-public class DoubleRule extends GameRules.Rule<DoubleRule> {
+public class DoubleRule extends GameRules.Rule<DoubleRule> implements GameruleAccessor<Double> {
     private double value;
+    private IGameruleValidator<Double> validator;
+    private IGameruleAdapter<Double> adapter;
+
+    public DoubleRule(GameRules.Type<DoubleRule> type, double initialValue, IGameruleValidator<Double> validator, IGameruleAdapter<Double> adapter) {
+        super(type);
+        Objects.requireNonNull(validator);
+        Objects.requireNonNull(adapter);
+        this.value = initialValue;
+        this.validator = validator;
+        this.adapter = adapter;
+    }
 
     public DoubleRule(GameRules.Type<DoubleRule> type, double initialValue) {
-        super(type);
-        this.value = initialValue;
+        this(type, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     public static GameRules.Type<DoubleRule> create(double initialValue, BiConsumer<MinecraftServer, DoubleRule> changeCallback) {
@@ -92,5 +107,25 @@ public class DoubleRule extends GameRules.Rule<DoubleRule> {
     public void setValue(DoubleRule rule, @Nullable MinecraftServer server) {
         this.value = rule.get();
         this.changed(server);
+    }
+
+    @Override
+    public IGameruleValidator<Double> unruled_getValidator() {
+        return this.validator;
+    }
+
+    @Override
+    public void unruled_setValidator(IGameruleValidator<Double> validator) {
+        this.validator = Objects.requireNonNull(validator);
+    }
+
+    @Override
+    public IGameruleAdapter<Double> unruled_getAdapter() {
+        return this.adapter;
+    }
+
+    @Override
+    public void unruled_setAdapter(IGameruleAdapter<Double> adapter) {
+        this.adapter = Objects.requireNonNull(adapter);
     }
 }

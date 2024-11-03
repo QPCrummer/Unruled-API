@@ -3,21 +3,34 @@ package mc.recraftors.unruled_api.rules;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.UnruledApi;
+import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import mc.recraftors.unruled_api.utils.IGameRulesVisitor;
+import mc.recraftors.unruled_api.utils.IGameruleAdapter;
+import mc.recraftors.unruled_api.utils.IGameruleValidator;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 @SuppressWarnings("unused")
-public class FloatRule extends GameRules.Rule<FloatRule> {
+public class FloatRule extends GameRules.Rule<FloatRule> implements GameruleAccessor<Float> {
     private float value;
+    private IGameruleValidator<Float> validator;
+    private IGameruleAdapter<Float> adapter;
+
+    public FloatRule(GameRules.Type<FloatRule> type, float initialValue, IGameruleValidator<Float> validator, IGameruleAdapter<Float> adapter) {
+        super(type);
+        Objects.requireNonNull(validator);
+        Objects.requireNonNull(adapter);
+        this.value = initialValue;
+    }
 
     public FloatRule(GameRules.Type<FloatRule> type, float initialValue) {
-        super(type);
-        this.value = initialValue;
+        this(type, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     public static GameRules.Type<FloatRule> create(float initialValue, BiConsumer<MinecraftServer, FloatRule> changeCallback) {
@@ -92,5 +105,25 @@ public class FloatRule extends GameRules.Rule<FloatRule> {
     public void setValue(FloatRule rule, @Nullable MinecraftServer server) {
         this.value = rule.get();
         this.changed(server);
+    }
+
+    @Override
+    public IGameruleValidator<Float> unruled_getValidator() {
+        return this.validator;
+    }
+
+    @Override
+    public void unruled_setValidator(IGameruleValidator<Float> validator) {
+        this.validator = Objects.requireNonNull(validator);
+    }
+
+    @Override
+    public IGameruleAdapter<Float> unruled_getAdapter() {
+        return this.adapter;
+    }
+
+    @Override
+    public void unruled_setAdapter(IGameruleAdapter<Float> adapter) {
+        this.adapter = Objects.requireNonNull(adapter);
     }
 }

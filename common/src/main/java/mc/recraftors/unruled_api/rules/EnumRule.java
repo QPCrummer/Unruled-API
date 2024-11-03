@@ -2,8 +2,7 @@ package mc.recraftors.unruled_api.rules;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import mc.recraftors.unruled_api.utils.EnumArgSupplier;
-import mc.recraftors.unruled_api.utils.IGameRulesVisitor;
+import mc.recraftors.unruled_api.utils.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
@@ -16,16 +15,26 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 @SuppressWarnings("unused")
-public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> {
+public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> implements GameruleAccessor<T> {
     private final Class<T> tClass;
     private T value;
+    private IGameruleValidator<T> validator;
+    private IGameruleAdapter<T> adapter;
 
-    public EnumRule(GameRules.Type<EnumRule<T>> type, Class<T> targetClass, T initialValue) {
+    public EnumRule(GameRules.Type<EnumRule<T>> type, Class<T> targetClass, T initialValue, IGameruleValidator<T> validator, IGameruleAdapter<T> adapter) {
         super(type);
         Objects.requireNonNull(targetClass);
         Objects.requireNonNull(initialValue);
+        Objects.requireNonNull(validator);
+        Objects.requireNonNull(adapter);
         this.tClass = targetClass;
         this.value = initialValue;
+        this.validator = validator;
+        this.adapter = adapter;
+    }
+
+    public EnumRule(GameRules.Type<EnumRule<T>> type, Class<T> targetClass, T initialValue) {
+        this(type, targetClass, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(
@@ -111,5 +120,25 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> {
 
     public static <U extends Enum<U>> Iterable<String> getEnumNames(Class<U> target) {
         return Arrays.stream(target.getEnumConstants()).map(Enum::name).toList();
+    }
+
+    @Override
+    public IGameruleValidator<T> unruled_getValidator() {
+        return this.validator;
+    }
+
+    @Override
+    public void unruled_setValidator(IGameruleValidator<T> validator) {
+        this.validator = Objects.requireNonNull(validator);
+    }
+
+    @Override
+    public IGameruleAdapter<T> unruled_getAdapter() {
+        return this.adapter;
+    }
+
+    @Override
+    public void unruled_setAdapter(IGameruleAdapter<T> adapter) {
+        this.adapter = Objects.requireNonNull(adapter);
     }
 }

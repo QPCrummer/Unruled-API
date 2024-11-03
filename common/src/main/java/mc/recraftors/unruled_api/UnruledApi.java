@@ -1,6 +1,10 @@
 package mc.recraftors.unruled_api;
 
+import mc.recraftors.unruled_api.impl.GameruleValidatorAdapter;
 import mc.recraftors.unruled_api.rules.*;
+import mc.recraftors.unruled_api.utils.GameruleAccessor;
+import mc.recraftors.unruled_api.utils.IGameruleAdapter;
+import mc.recraftors.unruled_api.utils.IGameruleValidator;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameRules;
 import org.apache.logging.log4j.LogManager;
@@ -256,6 +260,7 @@ public class UnruledApi {
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
 	 * @return The newly created gamerule's reference.
+	 * @apiNote Better use {@link #register(String, Category, Type)} directly.
 	 */
 	@Contract(value = "_, _ -> new", pure = true)
 	@NotNull public static Type<IntRule> createInt(int initialValue, BiConsumer<MinecraftServer, IntRule> changeCallback) {
@@ -270,6 +275,119 @@ public class UnruledApi {
 	@Contract(value = "_ -> new", pure = true)
 	@NotNull public static Type<IntRule> createInt(int initialValue) {
 		return IntRule.create(initialValue);
+	}
+
+	/**
+	 * Creates and registers a new vanilla integer gamerule with the
+	 * provided default value and change callback, at the specified
+	 * name and in the specified category, with the supplied value
+	 * validator and adapter.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's validator and adapter
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<IntRule> registerInt(
+			String name, Category category, int initialValue, BiConsumer<MinecraftServer, IntRule> changeCallback,
+			GameruleValidatorAdapter<Integer> validatorAdapter) {
+		Key<IntRule> rule = register(name, category, createInt(initialValue, changeCallback));
+        //noinspection unchecked,DataFlowIssue
+		((GameruleAccessor<Integer>) (Object) rule).unruled_setValidator(validatorAdapter);
+        //noinspection unchecked,DataFlowIssue
+		((GameruleAccessor<Integer>) (Object) rule).unruled_setAdapter(validatorAdapter);
+		return rule;
+	}
+
+	/**
+	 * Creates and registers a new vanilla integer gamerule with the
+	 * provided default value, at the specified name and in the specified
+	 * category, with the supplied value validator and adapter.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's validator and adapter
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<IntRule> registerInt(
+			String name, Category category, int initialValue,
+			GameruleValidatorAdapter<Integer> validatorAdapter) {
+		Key<IntRule> rule = register(name, category, createInt(initialValue));
+        //noinspection unchecked,DataFlowIssue
+		((GameruleAccessor<Integer>) (Object) rule).unruled_setValidator(validatorAdapter);
+        //noinspection unchecked,DataFlowIssue
+		((GameruleAccessor<Integer>) (Object) rule).unruled_setAdapter(validatorAdapter);
+		return rule;
+	}
+
+	/**
+	 * Creates and registers a new vanilla integer gamerule with the
+	 * provided default value and change callback, at the specified
+	 * name and in the specified category, with the supplied value
+	 * validator and adapter.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validator The new gamerule's validator.
+	 * @param adapter The new gamerule's adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _, _ -> new")
+	@NotNull public static Key<IntRule> registerInt(
+			String name, Category category, int initialValue, BiConsumer<MinecraftServer, IntRule> changeCallback,
+			IGameruleValidator<Integer> validator, IGameruleAdapter<Integer> adapter) {
+		Key<IntRule> rule = register(name, category, createInt(initialValue, changeCallback));
+        //noinspection unchecked,DataFlowIssue
+		((GameruleAccessor<Integer>) (Object) rule).unruled_setValidator(validator);
+        //noinspection unchecked,DataFlowIssue
+		((GameruleAccessor<Integer>) (Object) rule).unruled_setAdapter(adapter);
+		return rule;
+	}
+
+	/**
+	 * Creates and registers a new vanilla integer gamerule with the
+	 * provided default value and change callback, at the specified
+	 * name and in the specified category, with the supplied value
+	 * validator.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validator The new gamerule's validator.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<IntRule> registerInt(
+			String name, Category category, int initialValue, BiConsumer<MinecraftServer, IntRule> changeCallback,
+			IGameruleValidator<Integer> validator) {
+		Key<IntRule> rule = register(name, category, createInt(initialValue, changeCallback));
+        //noinspection unchecked,DataFlowIssue
+		((GameruleAccessor<Integer>) (Object) rule).unruled_setValidator(validator);
+		return rule;
+	}
+
+	/**
+	 * Creates and registers a new vanilla integer gamerule with the
+	 * provided default value, at the specified name and in the
+	 * specified category, with the supplied value validator.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validator The new gamerule's validator.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<IntRule> registerInt(
+			String name, Category category, int initialValue,
+			IGameruleValidator<Integer> validator) {
+		Key<IntRule> rule = register(name, category, createInt(initialValue));
+        //noinspection unchecked,DataFlowIssue
+		((GameruleAccessor<Integer>) (Object) rule).unruled_setValidator(validator);
+		return rule;
 	}
 
 	/**

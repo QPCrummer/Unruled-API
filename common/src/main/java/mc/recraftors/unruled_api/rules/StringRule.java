@@ -4,28 +4,40 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
-import mc.recraftors.unruled_api.utils.EncapsulatedException;
-import mc.recraftors.unruled_api.utils.IGameRulesVisitor;
+import mc.recraftors.unruled_api.utils.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
-public class StringRule extends GameRules.Rule<StringRule> {
+public class StringRule extends GameRules.Rule<StringRule> implements GameruleAccessor<String> {
     public static final Dynamic2CommandExceptionType SIZE_TOO_LONG = new Dynamic2CommandExceptionType((a, b) -> new LiteralMessage("Input must be at most " + a + " long, found " + b));
 
     private final int maxLength;
     private String value;
+    private IGameruleValidator<String> validator;
+    private IGameruleAdapter<String> adapter;
 
-    public StringRule(GameRules.Type<StringRule> type, int maxLength, String initialValue) {
+    public StringRule(GameRules.Type<StringRule> type, int maxLength, String initialValue, IGameruleValidator<String> validator, IGameruleAdapter<String> adapter) {
         super(type);
+        Objects.requireNonNull(initialValue);
+        Objects.requireNonNull(validator);
+        Objects.requireNonNull(adapter);
         if (maxLength <= 0) throw new UnsupportedOperationException("String rule size cannot be negative or null");
         else if (maxLength > 128) throw new UnsupportedOperationException("String rule size cannot be greater than 128. Use a Text rule for that.");
         this.maxLength = maxLength;
         if (initialValue.length() > this.getMaxLength()) throw new UnsupportedOperationException("Default value cannot breach max length");
         this.value = initialValue;
+        this.validator = validator;
+        this.adapter = adapter;
+    }
+
+    public StringRule(GameRules.Type<StringRule> type, int maxLength, String initialValue) {
+        this(type, maxLength, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     public static GameRules.Type<StringRule> create(int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
@@ -109,5 +121,25 @@ public class StringRule extends GameRules.Rule<StringRule> {
         if (breaksMaxLength(input)) input = input.substring(0, this.getMaxLength());
         this.set(input, server);
         this.changed(server);
+    }
+
+    @Override
+    public IGameruleValidator<String> unruled_getValidator() {
+        return this.validator;
+    }
+
+    @Override
+    public void unruled_setValidator(IGameruleValidator<String> validator) {
+        this.validator = Objects.requireNonNull(validator);
+    }
+
+    @Override
+    public IGameruleAdapter<String> unruled_getAdapter() {
+        return this.adapter;
+    }
+
+    @Override
+    public void unruled_setAdapter(IGameruleAdapter<String> adapter) {
+        this.adapter = Objects.requireNonNull(adapter);
     }
 }
