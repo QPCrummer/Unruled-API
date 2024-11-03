@@ -19,6 +19,8 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    implementation(include("io.github.llamalad7:mixinextras-forge:${rootProject.mixinextras_version}"))
 }
 
 def commonProject = rootProject.project("common")
