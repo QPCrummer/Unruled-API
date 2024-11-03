@@ -5,9 +5,11 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "GameRuleCommandMixin",
+    "GameRuleMixin",
     "GameRulesMixin",
     "GameRulesTypeMixin",
-    "GameRulesVisitorMixin"
+    "GameRulesVisitorMixin",
+    "IntRuleMixin"
   ],
   "client": [
     "EditGameRulesScreenAnonymousVisitorMixin",
