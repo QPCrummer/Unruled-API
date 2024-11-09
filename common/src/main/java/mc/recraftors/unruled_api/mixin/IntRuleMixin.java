@@ -8,11 +8,13 @@ import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameRules;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 
@@ -56,6 +58,15 @@ public abstract class IntRuleMixin implements GameruleAccessor<Integer> {
         throw new NumberFormatException();
     }
 
+    @WrapOperation(method = "setValue(Lnet/minecraft/world/GameRules$IntRule;Lnet/minecraft/server/MinecraftServer;)V", at = @At(value = "FIELD", target = "Lnet/minecraft/world/GameRules$IntRule;value:I", opcode = Opcodes.GETFIELD))
+    private int setValueLoadFieldWrapper(GameRules.IntRule instance, Operation<Integer> original) {
+        int i = original.call(instance);
+        if (this.unruled_getValidator().validate(i)) return i;
+        Optional<Integer> o = this.unruled_getAdapter().adapt(i);
+        if (o.isPresent() && this.unruled_getValidator().validate(o.get())) return o.get();
+        return this.value;
+    }
+
     @Inject(method = "set", at = @At("HEAD"), cancellable = true)
     private void setValidatorAdapter(int value, MinecraftServer server, CallbackInfo ci, @Local(argsOnly = true, ordinal = 0) LocalIntRef v) {
         boolean b = this.unruled_getValidator().validate(value);
@@ -67,5 +78,12 @@ public abstract class IntRuleMixin implements GameruleAccessor<Integer> {
         } else {
             ci.cancel();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Inject(method = "copy()Lnet/minecraft/world/GameRules$IntRule;", at = @At("RETURN"))
+    private void copyReturnInjector(CallbackInfoReturnable<GameRules.IntRule> cir) {
+        ((GameruleAccessor<Integer>) cir.getReturnValue()).unruled_setValidator(this.unruled_getValidator());
+        ((GameruleAccessor<Integer>) cir.getReturnValue()).unruled_setAdapter(this.unruled_getAdapter());
     }
 }

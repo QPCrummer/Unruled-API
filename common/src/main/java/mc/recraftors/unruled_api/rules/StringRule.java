@@ -71,28 +71,62 @@ public class StringRule extends GameRules.Rule<StringRule> implements GameruleAc
     }
 
     public void set(String input, MinecraftServer server) throws UnsupportedOperationException {
-        if (breaksMaxLength(input)) throw new UnsupportedOperationException();
-        this.value = input;
-        this.changed(server);
+        this.bump(input, server, true);
+    }
+
+    private void bump(String s, MinecraftServer server, boolean thr) {
+        if (breaksMaxLength(s)) {
+            if (thr) throw new UnsupportedOperationException();
+            s = s.substring(0, this.getMaxLength());
+        }
+        boolean b = this.validator.validate(s);
+        if (!b) {
+            Optional<String> o = this.adapter.adapt(s);
+            if (o.isPresent() && this.validator.validate(o.get())) {
+                s = o.get();
+                b = true;
+            }
+        }
+        if (b) {
+            this.value = s;
+            this.changed(server);
+        }
+    }
+
+    private boolean set(String s, boolean thr, boolean trc) {
+        if (this.breaksMaxLength(s)) {
+            if (thr) {
+                throw new EncapsulatedException("too long", SIZE_TOO_LONG.create(this.getMaxLength(), s.length()));
+            }
+            if (trc) {
+                s = s.substring(0, this.getMaxLength());
+            } else {
+                return false;
+            }
+        }
+        if (this.validator.validate(s)) {
+            this.value = s;
+            return true;
+        }
+        Optional<String> o = this.adapter.adapt(s);
+        if (o.isEmpty() || !this.validator.validate(o.get())) return false;
+        this.value = o.get();
+        return true;
     }
 
     public boolean validate(String input) {
-        if (breaksMaxLength(input)) return false;
-        this.value = input;
-        return true;
+        return this.set(input, false, false);
     }
 
     @Override
     protected void setFromArgument(CommandContext<ServerCommandSource> context, String name) {
         String input = StringArgumentType.getString(context, name);
-        if (breaksMaxLength(input)) throw new EncapsulatedException("too long", SIZE_TOO_LONG.create(this.getMaxLength(), input.length()));
-        this.value = input;
+        this.set(input, true, false);
     }
 
     @Override
     protected void deserialize(String value) {
-        if (breaksMaxLength(value)) value = value.substring(0, this.getMaxLength());
-        this.value = value;
+        this.set(value, false, true);
     }
 
     @Override
@@ -112,15 +146,12 @@ public class StringRule extends GameRules.Rule<StringRule> implements GameruleAc
 
     @Override
     protected StringRule copy() {
-        return new StringRule(this.type, this.getMaxLength(), this.get());
+        return new StringRule(this.type, this.getMaxLength(), this.get(), this.validator, this.adapter);
     }
 
     @Override
     public void setValue(StringRule rule, @Nullable MinecraftServer server) {
-        String input = rule.get();
-        if (breaksMaxLength(input)) input = input.substring(0, this.getMaxLength());
-        this.set(input, server);
-        this.changed(server);
+        this.bump(rule.get(), server, false);
     }
 
     @Override

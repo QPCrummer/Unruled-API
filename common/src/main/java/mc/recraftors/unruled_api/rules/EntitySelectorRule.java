@@ -53,9 +53,19 @@ public class EntitySelectorRule extends GameRules.Rule<EntitySelectorRule> imple
     public boolean validate(String input) {
         input = input.trim();
         try {
-            this.value = parseStr(input);
-            this.str = input;
-            return true;
+            EntitySelector e = parseStr(input);
+            if (this.validator.validate(e)) {
+                this.value = parseStr(input);
+                this.str = input;
+                return true;
+            }
+            Optional<EntitySelector> o = this.adapter.adapt(e);
+            if (o.isPresent() && this.validator.validate(o.get())) {
+                this.value = o.get();
+                this.str = input; // we assume the adapter able to get the same result from the same input
+                return true;
+            }
+            return false;
         } catch (EncapsulatedException e) {
             return false;
         }
@@ -71,14 +81,37 @@ public class EntitySelectorRule extends GameRules.Rule<EntitySelectorRule> imple
 
     @Override
     protected void setFromArgument(CommandContext<ServerCommandSource> context, String name) {
-        this.value = context.getArgument(name, EntitySelector.class);
-        this.str = context.getArgument(name, String.class);
+        String s = context.getArgument(name, String.class);
+        EntitySelector e = context.getArgument(name, EntitySelector.class);
+        if (this.validator.validate(e)) {
+            this.value = e;
+            this.str = s;
+            return;
+        }
+        Optional<EntitySelector> o = this.adapter.adapt(e);
+        if (o.isPresent() && this.validator.validate(o.get())) {
+            this.value = o.get();
+            this.str = s;
+            return;
+        }
+        throw new IllegalArgumentException("Unsupported value for input "+s);
     }
 
     @Override
     protected void deserialize(String value) {
-        this.str = value;
-        this.value = parseStr(value);
+        EntitySelector e = parseStr(value);
+        boolean b = this.validator.validate(e);
+        if (!b) {
+            Optional<EntitySelector> o = this.adapter.adapt(e);
+            if (o.isPresent()) {
+                e = o.get();
+                b = this.validator.validate(e);
+            }
+        }
+        if (b) {
+            this.str = value;
+            this.value = e;
+        }
     }
 
     @Override
@@ -98,13 +131,21 @@ public class EntitySelectorRule extends GameRules.Rule<EntitySelectorRule> imple
 
     @Override
     protected EntitySelectorRule copy() {
-        return new EntitySelectorRule(this.type, this.str);
+        return new EntitySelectorRule(this.type, this.str, this.validator, this.adapter);
     }
 
     @Override
     public void setValue(EntitySelectorRule rule, @Nullable MinecraftServer server) {
+        EntitySelector e = rule.get();
+        if (this.validator.validate(e)){
+            this.value = e;
+            this.str = rule.serialize();
+            return;
+        }
+        Optional<EntitySelector> o = this.adapter.adapt(e);
+        if (o.isEmpty() || !this.validator.validate(o.get())) return;
         this.str = rule.serialize();
-        this.value = parseStr(rule.serialize());
+        this.value = o.get();
     }
 
     @Override

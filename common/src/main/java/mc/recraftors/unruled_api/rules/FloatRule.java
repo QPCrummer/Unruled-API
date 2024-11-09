@@ -27,15 +27,25 @@ public class FloatRule extends GameRules.Rule<FloatRule> implements GameruleAcce
         Objects.requireNonNull(validator);
         Objects.requireNonNull(adapter);
         this.value = initialValue;
+        this.validator = validator;
+        this.adapter = adapter;
     }
 
     public FloatRule(GameRules.Type<FloatRule> type, float initialValue) {
         this(type, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
-    public static GameRules.Type<FloatRule> create(float initialValue, BiConsumer<MinecraftServer, FloatRule> changeCallback) {
-        return new GameRules.Type<>(FloatArgumentType::floatArg, type -> new FloatRule(type, initialValue), changeCallback,
+    public static GameRules.Type<FloatRule> create(float initialValue, BiConsumer<MinecraftServer, FloatRule> changeCallback, IGameruleValidator<Float> validator, IGameruleAdapter<Float> adapter) {
+        return new GameRules.Type<>(FloatArgumentType::floatArg, type -> new FloatRule(type, initialValue, validator, adapter), changeCallback,
                 (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitFloat(key, cType));
+    }
+
+    public static GameRules.Type<FloatRule> create(float initialValue, BiConsumer<MinecraftServer, FloatRule> changeCallback) {
+        return create(initialValue, changeCallback, IGameruleValidator::alwaysTrue, Optional::of);
+    }
+
+    public static GameRules.Type<FloatRule> create(float initialValue, IGameruleValidator<Float> validator, IGameruleAdapter<Float> adapter) {
+        return create(initialValue, ((server, floatRule) -> {}), validator, adapter);
     }
 
     public static GameRules.Type<FloatRule> create(float initialValue) {
@@ -47,14 +57,29 @@ public class FloatRule extends GameRules.Rule<FloatRule> implements GameruleAcce
     }
 
     public void set(float value, MinecraftServer server) {
-        this.value = value;
-        this.changed(server);
+        this.bump(value, server);
+    }
+
+    private void bump(float value, MinecraftServer server) {
+        boolean b = false;
+        if (this.validator.validate(value)) b = true;
+        else {
+            Optional<Float> o = this.adapter.adapt(value);
+            if (o.isPresent() && this.validator.validate(o.get())) {
+                value = o.get();
+                b = true;
+            }
+        }
+        if (b) {
+            this.value = value;
+            this.changed(server);
+        }
     }
 
     public boolean validate(String input) {
         try {
-            this.value = Float.parseFloat(input);
-            return true;
+            float f = Float.parseFloat(input);
+            return this.set(f);
         } catch (NumberFormatException e) {
             return false;
         }
@@ -71,14 +96,27 @@ public class FloatRule extends GameRules.Rule<FloatRule> implements GameruleAcce
         return 0;
     }
 
+    private boolean set(float f) {
+        if (this.validator.validate(f)) {
+            this.value = f;
+            return true;
+        }
+        Optional<Float> o = this.adapter.adapt(f);
+        if (o.isEmpty() || !this.validator.validate(o.get())) return false;
+        this.value = o.get();
+        return true;
+    }
+
     @Override
     protected void setFromArgument(CommandContext<ServerCommandSource> context, String name) {
-        this.value = FloatArgumentType.getFloat(context, name);
+        float f = FloatArgumentType.getFloat(context, name);
+        this.set(f);
     }
 
     @Override
     protected void deserialize(String value) {
-        this.value = FloatRule.parseFloat(value);
+        float f = FloatRule.parseFloat(value);
+        this.set(f);
     }
 
     @Override
@@ -103,8 +141,7 @@ public class FloatRule extends GameRules.Rule<FloatRule> implements GameruleAcce
 
     @Override
     public void setValue(FloatRule rule, @Nullable MinecraftServer server) {
-        this.value = rule.get();
-        this.changed(server);
+        this.bump(rule.get(), server);
     }
 
     @Override

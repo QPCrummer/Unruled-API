@@ -35,9 +35,17 @@ public class LongRule extends GameRules.Rule<LongRule> implements GameruleAccess
         this(type, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
-    public static GameRules.Type<LongRule> create(long initialValue, BiConsumer<MinecraftServer, LongRule> changeCallback) {
-        return new GameRules.Type<>(LongArgumentType::longArg, type -> new LongRule(type, initialValue), changeCallback,
+    public static GameRules.Type<LongRule> create(long initialValue, BiConsumer<MinecraftServer, LongRule> changeCallback, IGameruleValidator<Long> validator, IGameruleAdapter<Long> adapter) {
+        return new GameRules.Type<>(LongArgumentType::longArg, type -> new LongRule(type, initialValue, validator, adapter), changeCallback,
                 (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitLong(key, cType));
+    }
+
+    public static GameRules.Type<LongRule> create(long initialValue, BiConsumer<MinecraftServer, LongRule> changeCallback) {
+        return create(initialValue, changeCallback, IGameruleValidator::alwaysTrue, Optional::of);
+    }
+
+    public static GameRules.Type<LongRule> create(long initialValue, IGameruleValidator<Long> validator, IGameruleAdapter<Long> adapter) {
+        return create(initialValue, (server, longRule) -> {}, validator, adapter);
     }
 
     public static GameRules.Type<LongRule> create(long initialValue) {
@@ -49,14 +57,40 @@ public class LongRule extends GameRules.Rule<LongRule> implements GameruleAccess
     }
 
     public void set(long value, MinecraftServer server) {
-        this.value = value;
-        this.changed(server);
+        this.bump(value, server);
+    }
+
+    private void bump(long value, MinecraftServer server) {
+        boolean b = false;
+        if (this.validator.validate(value)) b = true;
+        else {
+            Optional<Long> o = this.adapter.adapt(value);
+            if (o.isPresent() && this.validator.validate(o.get())) {
+                value = o.get();
+                b = true;
+            }
+        }
+        if (b) {
+            this.value = value;
+            this.changed(server);
+        }
+    }
+
+    private boolean set(long f) {
+        if (this.validator.validate(f)) {
+            this.value = f;
+            return true;
+        }
+        Optional<Long> o = this.adapter.adapt(f);
+        if (o.isEmpty() || !this.validator.validate(o.get())) return false;
+        this.value = o.get();
+        return true;
     }
 
     public boolean validate(String input) {
         try {
-            this.value = Long.parseLong(input);
-            return true;
+            long l = Long.parseLong(input);
+            return this.set(l);
         } catch (NumberFormatException e) {
             return false;
         }
@@ -75,12 +109,14 @@ public class LongRule extends GameRules.Rule<LongRule> implements GameruleAccess
 
     @Override
     protected void setFromArgument(CommandContext<ServerCommandSource> context, String name) {
-        this.value = LongArgumentType.getLong(context, name);
+        long l = LongArgumentType.getLong(context, name);
+        this.set(l);
     }
 
     @Override
     protected void deserialize(String value) {
-        this.value = LongRule.parseLong(value);
+        long l = LongRule.parseLong(value);
+        this.set(l);
     }
 
     @Override
@@ -105,8 +141,7 @@ public class LongRule extends GameRules.Rule<LongRule> implements GameruleAccess
 
     @Override
     public void setValue(LongRule rule, @Nullable MinecraftServer server) {
-        this.value = rule.get();
-        this.changed(server);
+        this.bump(rule.get(), server);
     }
 
     @Override

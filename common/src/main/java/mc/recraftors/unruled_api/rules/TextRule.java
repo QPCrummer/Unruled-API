@@ -31,6 +31,6 @@ public class TextRule extends StringRule {
 
     @Override
     protected StringRule copy() {
-        return new TextRule(this.type, getMaxLength(), this.get());
+        return new TextRule(this.type, getMaxLength(), this.get(), this.unruled_getValidator(), this.unruled_getAdapter());
     }
 }

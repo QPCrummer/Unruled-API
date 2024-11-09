@@ -7,4 +7,20 @@ public interface IGameruleValidator <T> {
     static <U> boolean alwaysTrue(U u) {
         return true;
     }
+
+    default IGameruleValidator<T> and(IGameruleValidator<T> other) {
+        return t -> this.validate(t) && other.validate(t);
+    }
+
+    default IGameruleValidator<T> or(IGameruleValidator<T> other) {
+        return t -> this.validate(t) || other.validate(t);
+    }
+
+    default IGameruleValidator<T> xor(IGameruleValidator<T> other) {
+        return t -> this.validate(t) ^ other.validate(t);
+    }
+
+    default IGameruleValidator<T> not() {
+        return t -> !this.validate(t);
+    }
 }

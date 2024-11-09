@@ -38,13 +38,25 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
     }
 
     public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(
-            Class<T> targetClass, T initialValue, BiConsumer<MinecraftServer, EnumRule<T>> changeCallback) {
-        return new GameRules.Type<>((EnumArgSupplier<T>) () -> targetClass, type -> new EnumRule<>(type, targetClass, initialValue),
+            Class<T> targetClass, T initialValue, BiConsumer<MinecraftServer, EnumRule<T>> changeCallback,
+            IGameruleValidator<T> validator, IGameruleAdapter<T> adapter) {
+        return new GameRules.Type<>((EnumArgSupplier<T>) () -> targetClass,
+                type -> new EnumRule<>(type, targetClass, initialValue, validator, adapter),
                 changeCallback, ((consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitEnum(key, cType)));
     }
 
+    public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(
+            Class<T> targetClass, T initialValue, BiConsumer<MinecraftServer, EnumRule<T>> changeCallback) {
+        return create(targetClass, initialValue, changeCallback, IGameruleValidator::alwaysTrue, Optional::of);
+    }
+
+    public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(Class<T> targetClass, T initialValue,
+            IGameruleValidator<T> validator, IGameruleAdapter<T> adapter) {
+        return create(targetClass, initialValue, ((server, enumRule) -> {}), validator, adapter);
+    }
+
     public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(Class<T> targetClass, T initialValue) {
-        return create(targetClass, initialValue, ((server, enumRule) -> {}));
+        return create(targetClass, initialValue, ((server, enumRule) -> {}), IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     public Optional<T> parse(String input) {
@@ -57,10 +69,22 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
     }
 
     public boolean validate(String input) {
-        return parse(input).flatMap(val -> {
-            set(val);
-            return Optional.of(0);
-        }).isEmpty();
+        return setFromStr(input);
+    }
+
+    private boolean setFromStr(String s) {
+        Optional<T> o = parse(s);
+        if (o.isEmpty()) return false;
+        if (this.validator.validate(o.get())) {
+            this.set(o.get());
+            return true;
+        }
+        o = this.adapter.adapt(o.get());
+        if (o.isPresent() && this.validator.validate(o.get())) {
+            this.set(o.get());
+            return true;
+        }
+        return false;
     }
 
     public T get() {
@@ -72,8 +96,25 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
     }
 
     public void set(T value, MinecraftServer server) {
-        set(value);
-        this.changed(server);
+        this.bump(value, server);
+    }
+
+    private void bump(T value, MinecraftServer server) {
+        if (value == null) return;
+        boolean b = false;
+        if (this.validator.validate(value)) {
+            b = true;
+        } else {
+            Optional<T> o = this.adapter.adapt(value);
+            if (o.isPresent() && this.validator.validate(o.get())) {
+                value = o.get();
+                b = true;
+            }
+        }
+        if (b) {
+            set(value);
+            this.changed(server);
+        }
     }
 
     public T[] values() {
@@ -83,12 +124,12 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
     @Override
     protected void setFromArgument(CommandContext<ServerCommandSource> context, String name) {
         String s = StringArgumentType.getString(context, name);
-        parse(s).ifPresent(this::set);
+        setFromStr(s);
     }
 
     @Override
     protected void deserialize(String value) {
-        this.value = parse(value).orElse(null);
+        setFromStr(value);
     }
 
     @Override
@@ -109,13 +150,13 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
 
     @Override
     protected EnumRule<T> copy() {
-        return new EnumRule<>(this.type, this.tClass, this.value);
+        return new EnumRule<>(this.type, this.tClass, this.value, this.validator, this.adapter);
     }
 
     @Override
     public void setValue(EnumRule<T> rule, @Nullable MinecraftServer server) {
-        this.value = rule.get();
-        this.changed(server);
+        T v = rule.get();
+        this.bump(v, server);
     }
 
     public static <U extends Enum<U>> Iterable<String> getEnumNames(Class<U> target) {

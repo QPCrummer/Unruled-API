@@ -35,13 +35,22 @@ public class DoubleRule extends GameRules.Rule<DoubleRule> implements GameruleAc
         this(type, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
-    public static GameRules.Type<DoubleRule> create(double initialValue, BiConsumer<MinecraftServer, DoubleRule> changeCallback) {
-        return new GameRules.Type<>(DoubleArgumentType::doubleArg, type -> new DoubleRule(type, initialValue), changeCallback,
+    public static GameRules.Type<DoubleRule> create(double initialValue, BiConsumer<MinecraftServer, DoubleRule> changeCallback,
+                                                    IGameruleValidator<Double> validator, IGameruleAdapter<Double> adapter) {
+        return new GameRules.Type<>(DoubleArgumentType::doubleArg, type -> new DoubleRule(type, initialValue, validator, adapter), changeCallback,
                 (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitDouble(key, cType));
     }
 
+    public static GameRules.Type<DoubleRule> create(double initialValue, BiConsumer<MinecraftServer, DoubleRule> changeCallback) {
+        return create(initialValue, changeCallback, IGameruleValidator::alwaysTrue, Optional::of);
+    }
+
+    public static GameRules.Type<DoubleRule> create(double initialValue, IGameruleValidator<Double> validator, IGameruleAdapter<Double> adapter) {
+        return create(initialValue, (server, doubleRule) -> {}, validator, adapter);
+    }
+
     public static GameRules.Type<DoubleRule> create(double initialValue) {
-        return create(initialValue, (server, doubleRule) -> {});
+        return create(initialValue, (server, doubleRule) -> {}, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     public double get() {
@@ -49,14 +58,31 @@ public class DoubleRule extends GameRules.Rule<DoubleRule> implements GameruleAc
     }
 
     public void set(double value, MinecraftServer server) {
-        this.value = value;
-        this.changed(server);
+        if (this.validator.validate(value)) {
+            this.value = value;
+            this.changed(server);
+            return;
+        }
+        Optional<Double> o = this.adapter.adapt(value);
+        if (o.isPresent() && this.validator.validate(o.get())) {
+            this.value = o.get();
+            this.changed(server);
+        }
     }
 
     public boolean validate(String input) {
         try {
-            this.value = Double.parseDouble(input);
-            return true;
+            double d = Double.parseDouble(input);
+            if (this.validator.validate(d)) {
+                this.value = Double.parseDouble(input);
+                return true;
+            }
+            Optional<Double> o = this.adapter.adapt(d);
+            if (o.isPresent() && this.validator.validate(o.get())) {
+                this.value = o.get();
+                return true;
+            }
+            return false;
         } catch (NumberFormatException e) {
             return false;
         }
@@ -75,12 +101,38 @@ public class DoubleRule extends GameRules.Rule<DoubleRule> implements GameruleAc
 
     @Override
     protected void setFromArgument(CommandContext<ServerCommandSource> context, String name) {
-        this.value = DoubleArgumentType.getDouble(context, name);
+        double d = DoubleArgumentType.getDouble(context, name);
+        boolean b = this.validator.validate(d);
+        if (b) {
+            this.value = d;
+            return;
+        }
+        Optional<Double> o = this.adapter.adapt(d);
+        if (o.isPresent()) {
+            b = this.validator.validate(o.get());
+            if (b) {
+                this.value = o.get();
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Invalid value "+d);
     }
 
     @Override
     protected void deserialize(String value) {
-        this.value = Double.parseDouble(value);
+        double d = Double.parseDouble(value);
+        boolean b = this.validator.validate(d);
+        if (b) {
+            this.value = d;
+            return;
+        }
+        Optional<Double> o = this.adapter.adapt(d);
+        if (o.isPresent()) {
+            b = this.validator.validate(o.get());
+            if (b) {
+                this.value = o.get();
+            }
+        }
     }
 
     @Override
@@ -100,13 +152,24 @@ public class DoubleRule extends GameRules.Rule<DoubleRule> implements GameruleAc
 
     @Override
     protected DoubleRule copy() {
-        return new DoubleRule(this.type, this.value);
+        return new DoubleRule(this.type, this.value, this.validator, this.adapter);
     }
 
     @Override
     public void setValue(DoubleRule rule, @Nullable MinecraftServer server) {
-        this.value = rule.get();
-        this.changed(server);
+        double d = rule.get();
+        boolean b = this.validator.validate(d);
+        if (!b) {
+            Optional<Double> o = this.adapter.adapt(d);
+            if (o.isPresent() && this.validator.validate(o.get())) {
+                d = o.get();
+                b = true;
+            }
+        }
+        if (b) {
+            this.value = d;
+            this.changed(server);
+        }
     }
 
     @Override
