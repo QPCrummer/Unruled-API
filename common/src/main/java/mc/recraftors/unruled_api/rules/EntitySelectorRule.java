@@ -37,9 +37,23 @@ public class EntitySelectorRule extends GameRules.Rule<EntitySelectorRule> imple
         this(type, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
+    public static GameRules.Type<EntitySelectorRule> create(
+            String initialValue, BiConsumer<MinecraftServer, EntitySelectorRule> changeCallback,
+            IGameruleValidator<EntitySelector> validator, IGameruleAdapter<EntitySelector> adapter
+    ) {
+        return new GameRules.Type<>(EntityArgumentType::entities, type -> new EntitySelectorRule(type, initialValue, validator, adapter),
+                changeCallback, ((consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitEntitySelector(key, cType)));
+    }
+
     public static GameRules.Type<EntitySelectorRule> create(String initialValue, BiConsumer<MinecraftServer, EntitySelectorRule> changeCallback) {
         return new GameRules.Type<>(EntityArgumentType::entities, type -> new EntitySelectorRule(type, initialValue), changeCallback,
                 ((consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitEntitySelector(key, cType)));
+    }
+
+    public static GameRules.Type<EntitySelectorRule> create(
+            String initialValue, IGameruleValidator<EntitySelector> validator, IGameruleAdapter<EntitySelector> adapter
+    ) {
+        return create(initialValue, (server, entitySelectorRule) -> {}, validator, adapter);
     }
 
     public static GameRules.Type<EntitySelectorRule> create(String initialValue) {
