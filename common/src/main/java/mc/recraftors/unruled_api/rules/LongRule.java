@@ -45,11 +45,11 @@ public class LongRule extends GameRules.Rule<LongRule> implements GameruleAccess
     }
 
     public static GameRules.Type<LongRule> create(long initialValue, IGameruleValidator<Long> validator, IGameruleAdapter<Long> adapter) {
-        return create(initialValue, (server, longRule) -> {}, validator, adapter);
+        return create(initialValue, UnruledApi.empty(), validator, adapter);
     }
 
     public static GameRules.Type<LongRule> create(long initialValue) {
-        return create(initialValue, (server, longRule) -> {});
+        return create(initialValue, UnruledApi.empty());
     }
 
     public long get() {

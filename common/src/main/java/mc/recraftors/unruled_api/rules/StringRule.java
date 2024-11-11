@@ -4,6 +4,7 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
+import mc.recraftors.unruled_api.UnruledApi;
 import mc.recraftors.unruled_api.utils.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public class StringRule extends GameRules.Rule<StringRule> implements GameruleAccessor<String> {
     public static final Dynamic2CommandExceptionType SIZE_TOO_LONG = new Dynamic2CommandExceptionType((a, b) -> new LiteralMessage("Input must be at most " + a + " long, found " + b));
 
@@ -40,22 +42,52 @@ public class StringRule extends GameRules.Rule<StringRule> implements GameruleAc
         this(type, maxLength, initialValue, IGameruleValidator::alwaysTrue, Optional::of);
     }
 
-    public static GameRules.Type<StringRule> create(int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
-        return new GameRules.Type<>(StringArgumentType::string, type -> new StringRule(type, maxLength, initialValue), changeCallback,
+    public static GameRules.Type<StringRule> create(
+            int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
+            IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
+    ) {
+        return new GameRules.Type<>(StringArgumentType::string, type -> new StringRule(type, maxLength, initialValue, validator, adapter), changeCallback,
                 (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitString(key, cType));
     }
 
-    public static GameRules.Type<StringRule> create(int maxLength, String initialValue) {
-        return create(maxLength, initialValue, (server, stringRule) -> {});
+    public static GameRules.Type<StringRule> create(int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
+        return new GameRules.Type<>(StringArgumentType::string, type -> new StringRule(type, maxLength, initialValue),
+                changeCallback, (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitString(key, cType));
     }
 
-    public static GameRules.Type<StringRule> createText(int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
+    public static GameRules.Type<StringRule> create(
+            int maxLength, String initialValue, IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
+    ) {
+        return create(maxLength, initialValue, UnruledApi.empty(), validator, adapter);
+    }
+
+    public static GameRules.Type<StringRule> create(int maxLength, String initialValue) {
+        return create(maxLength, initialValue, UnruledApi.empty());
+    }
+
+    public static GameRules.Type<StringRule> createText(
+            int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
+            IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
+    ) {
+        return new GameRules.Type<>(StringArgumentType::string, type -> new TextRule(type, maxLength, initialValue, validator, adapter),
+                changeCallback, (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitText(key, cType));
+    }
+
+    public static GameRules.Type<StringRule> createText(
+            int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback
+    ) {
         return new GameRules.Type<>(StringArgumentType::string, type -> new TextRule(type, maxLength, initialValue), changeCallback,
                 (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitText(key, cType));
     }
 
+    public static GameRules.Type<StringRule> createText(
+            int maxLength, String initialValue, IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
+    ) {
+        return createText(maxLength, initialValue, UnruledApi.empty(), validator, adapter);
+    }
+
     public static GameRules.Type<StringRule> createText(int maxLength, String initialValue) {
-        return createText(maxLength, initialValue, (server, stringRule) -> {});
+        return createText(maxLength, initialValue, UnruledApi.empty());
     }
 
     public String get() {

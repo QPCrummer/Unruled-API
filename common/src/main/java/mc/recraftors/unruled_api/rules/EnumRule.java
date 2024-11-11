@@ -2,6 +2,7 @@ package mc.recraftors.unruled_api.rules;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import mc.recraftors.unruled_api.UnruledApi;
 import mc.recraftors.unruled_api.utils.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -52,11 +53,11 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
 
     public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(Class<T> targetClass, T initialValue,
             IGameruleValidator<T> validator, IGameruleAdapter<T> adapter) {
-        return create(targetClass, initialValue, ((server, enumRule) -> {}), validator, adapter);
+        return create(targetClass, initialValue, UnruledApi.empty(), validator, adapter);
     }
 
     public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(Class<T> targetClass, T initialValue) {
-        return create(targetClass, initialValue, ((server, enumRule) -> {}), IGameruleValidator::alwaysTrue, Optional::of);
+        return create(targetClass, initialValue, UnruledApi.empty(), IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     public Optional<T> parse(String input) {

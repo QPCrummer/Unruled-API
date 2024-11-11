@@ -46,11 +46,11 @@ public class DoubleRule extends GameRules.Rule<DoubleRule> implements GameruleAc
     }
 
     public static GameRules.Type<DoubleRule> create(double initialValue, IGameruleValidator<Double> validator, IGameruleAdapter<Double> adapter) {
-        return create(initialValue, (server, doubleRule) -> {}, validator, adapter);
+        return create(initialValue, UnruledApi.empty(), validator, adapter);
     }
 
     public static GameRules.Type<DoubleRule> create(double initialValue) {
-        return create(initialValue, (server, doubleRule) -> {}, IGameruleValidator::alwaysTrue, Optional::of);
+        return create(initialValue, UnruledApi.empty(), IGameruleValidator::alwaysTrue, Optional::of);
     }
 
     public double get() {

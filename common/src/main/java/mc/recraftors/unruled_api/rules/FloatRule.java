@@ -45,11 +45,11 @@ public class FloatRule extends GameRules.Rule<FloatRule> implements GameruleAcce
     }
 
     public static GameRules.Type<FloatRule> create(float initialValue, IGameruleValidator<Float> validator, IGameruleAdapter<Float> adapter) {
-        return create(initialValue, ((server, floatRule) -> {}), validator, adapter);
+        return create(initialValue, UnruledApi.empty(), validator, adapter);
     }
 
     public static GameRules.Type<FloatRule> create(float initialValue) {
-        return create(initialValue, ((server, floatRule) -> {}));
+        return create(initialValue, UnruledApi.empty());
     }
 
     public float get() {
