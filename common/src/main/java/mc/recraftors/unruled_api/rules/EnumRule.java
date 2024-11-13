@@ -9,10 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 @SuppressWarnings("unused")
@@ -128,7 +125,21 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
     }
 
     public T[] values() {
-        return tClass.getEnumConstants();
+        List<T> l = Arrays.stream(tClass.getEnumConstants()).filter(this.validator::validate).toList();
+        T[] a = l.toArray(this.tClass.getEnumConstants());
+        int i = 0;
+        for (T t : a) {
+            if (t == null) {
+                break;
+            }
+            i++;
+        }
+        if (i == 0) {
+            a[0] = this.value;
+            i = 1;
+        }
+        a = Arrays.copyOf(a, i);
+        return a;
     }
 
     @Override
