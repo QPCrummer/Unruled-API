@@ -33,7 +33,7 @@ public class LongRuleWidget extends NamedRuleWidget {
     @Override
     public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
         this.drawName(context, y, x);
-        this.valueWidget.setX(x + entryHeight - 44);
+        this.valueWidget.setX(x + entryWidth - 44);
         this.valueWidget.setY(y);
         this.valueWidget.render(context, mouseX, mouseY, tickDelta);
     }
