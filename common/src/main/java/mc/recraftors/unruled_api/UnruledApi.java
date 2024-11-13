@@ -58,7 +58,9 @@ public class UnruledApi {
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _ -> new", pure = true)
-	@NotNull public static Type<BooleanRule> createBoolean(boolean initialValue, BiConsumer<MinecraftServer, BooleanRule> changeCallback) {
+	@NotNull public static Type<BooleanRule> createBoolean(
+			boolean initialValue, BiConsumer<MinecraftServer, BooleanRule> changeCallback
+	) {
 		return BooleanRule.create(initialValue, changeCallback);
 	}
 
@@ -82,7 +84,9 @@ public class UnruledApi {
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _ -> new")
-	@NotNull public static Key<BooleanRule> registerBoolean(String name, Category category, boolean initialValue, BiConsumer<MinecraftServer, BooleanRule> changeCallback) {
+	@NotNull public static Key<BooleanRule> registerBoolean(
+			String name, Category category, boolean initialValue, BiConsumer<MinecraftServer, BooleanRule> changeCallback
+	) {
 		return register(name, category, createBoolean(initialValue, changeCallback));
 	}
 
@@ -121,6 +125,22 @@ public class UnruledApi {
 	 * {@link Double#MAX_VALUE}, with the provided default value and change callback.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _ -> new", pure = true)
+	@NotNull public static Type<DoubleRule> createDouble(
+			double initialValue, BiConsumer<MinecraftServer, DoubleRule> changeCallback,
+			GameruleValidatorAdapter<Double> validatorAdapter
+	) {
+		return DoubleRule.create(initialValue, changeCallback, validatorAdapter, validatorAdapter);
+	}
+
+	/**
+	 * Creates a new Double gamerule, able to hold values from {@link Double#MIN_VALUE} to
+	 * {@link Double#MAX_VALUE}, with the provided default value and change callback.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _ -> new", pure = true)
@@ -143,6 +163,20 @@ public class UnruledApi {
 			double initialValue, IGameruleValidator<Double> validator, IGameruleAdapter<Double> adapter
 	) {
 		return DoubleRule.create(initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Double gamerule, able to hold values from {@link Double#MIN_VALUE} to
+	 * {@link Double#MAX_VALUE}, with the provided default value.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _ -> new", pure = true)
+	@NotNull public static Type<DoubleRule> createDouble(
+			double initialValue, GameruleValidatorAdapter<Double> validatorAdapter
+	) {
+		return DoubleRule.create(initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -186,6 +220,26 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<DoubleRule> registerDouble(
+			String name, Category category, double initialValue, BiConsumer<MinecraftServer, DoubleRule> changeCallback,
+			GameruleValidatorAdapter<Double> validatorAdapter
+	) {
+		return register(name, category, createDouble(initialValue, changeCallback, validatorAdapter, validatorAdapter));
+	}
+
+	/**
+	 * Creates and registers a new Double gamerule, able to hold value from
+	 * {@link Double#MIN_VALUE} to {@link Double#MAX_VALUE}, with the provided
+	 * default value and change callback, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _ -> new")
@@ -210,6 +264,23 @@ public class UnruledApi {
 	@NotNull public static Key<DoubleRule> registerDouble(
 			String name, Category category, double initialValue, IGameruleValidator<Double> validator,
 			IGameruleAdapter<Double> adapter
+	) {
+		return register(name, category, createDouble(initialValue, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Double gamerule, able to hold value from
+	 * {@link Double#MIN_VALUE} to {@link Double#MAX_VALUE}, with the provided
+	 * default value, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<DoubleRule> registerDouble(
+			String name, Category category, double initialValue, GameruleValidatorAdapter<Double> validatorAdapter
 	) {
 		return register(name, category, createDouble(initialValue));
 	}
@@ -253,6 +324,24 @@ public class UnruledApi {
 	 * @param tClass The new gamerule's enum class.
 	 * @param initialValue The new gamerule's default value. Must be of the provided enum class.
 	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 * @param <T> The new gamerule's enum type.
+	 */
+	@Contract(value = "_, _, _, _ -> new", pure = true)
+	@NotNull public static <T extends Enum<T>> Type<EnumRule<T>> createEnum(
+			Class<T> tClass, T initialValue, BiConsumer<MinecraftServer, EnumRule<T>> changeCallback,
+			GameruleValidatorAdapter<T> validatorAdapter
+	) {
+		return EnumRule.create(tClass, initialValue, changeCallback, validatorAdapter, validatorAdapter);
+	}
+
+	/**
+	 * Creates a new Enum gamerule of the specified class, with the provided default value
+	 * and change callback.
+	 * @param tClass The new gamerule's enum class.
+	 * @param initialValue The new gamerule's default value. Must be of the provided enum class.
+	 * @param changeCallback The new gamerule's change callback.
 	 * @return The newly created gamerule's reference.
 	 * @param <T> The new gamerule's enum type.
 	 */
@@ -277,6 +366,21 @@ public class UnruledApi {
 			Class<T> tClass, T initialValue, IGameruleValidator<T> validator, IGameruleAdapter<T> adapter
 	) {
 		return EnumRule.create(tClass, initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Enum gamerule of the specified class, with the provided default value.
+	 * @param tClass The new gamerule's enum class.
+	 * @param initialValue The new gamerule's default value. Must be of the provided enum class.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 * @param <T> The new gamerule's enum type.
+	 */
+	@Contract(value = "_, _, _-> new", pure = true)
+	@NotNull public static <T extends Enum<T>> Type<EnumRule<T>> createEnum(
+			Class<T> tClass, T initialValue, GameruleValidatorAdapter<T> validatorAdapter
+	) {
+		return EnumRule.create(tClass, initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -312,6 +416,29 @@ public class UnruledApi {
 			IGameruleAdapter<T> adapter
 	) {
 		return register(name, category, createEnum(tClass, initialValue, changeCallback, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Enum gamerule of the specified class,
+	 * with the provided default value, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param tClass The new gamerule's enum class.
+	 * @param initialValue The new gamerule's default value. Must be of the provided enum class.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The new rule registration key.
+	 * @param <T> The new gamerule's enum type.
+	 */
+	@Contract("_, _, _, _, _, _ -> new")
+	@NotNull public static <T extends Enum<T>> Key<EnumRule<T>> registerEnum(
+			String name, Category category, Class<T> tClass, T initialValue,
+			BiConsumer<MinecraftServer, EnumRule<T>> changeCallback, GameruleValidatorAdapter<T> validatorAdapter
+	) {
+		return register(name, category,
+				createEnum(tClass, initialValue, changeCallback, validatorAdapter, validatorAdapter)
+		);
 	}
 
 	/**
@@ -363,6 +490,25 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param tClass The new gamerule's enum class.
 	 * @param initialValue The new gamerule's default value. Must be of the provided enum class.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The new rule registration key.
+	 * @param <T> The new gamerule's enum type.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static <T extends Enum<T>> Key<EnumRule<T>> registerEnum(
+			String name, Category category, Class<T> tClass, T initialValue, GameruleValidatorAdapter<T> validatorAdapter
+	) {
+		return register(name, category, createEnum(tClass, initialValue, validatorAdapter, validatorAdapter));
+	}
+
+	/**
+	 * Creates and registers a new Enum gamerule of the specified class,
+	 * with the provided default value, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param tClass The new gamerule's enum class.
+	 * @param initialValue The new gamerule's default value. Must be of the provided enum class.
 	 * @return The new rule registration key.
 	 * @param <T> The new gamerule's enum type.
 	 */
@@ -395,6 +541,22 @@ public class UnruledApi {
 	 * {@link Float#MAX_VALUE}, with the provided default value and change callback.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _ -> new", pure = true)
+	@NotNull public static Type<FloatRule> createFloat(
+			float initialValue, BiConsumer<MinecraftServer, FloatRule> changeCallback,
+			GameruleValidatorAdapter<Float> validatorAdapter
+	) {
+		return FloatRule.create(initialValue, changeCallback, validatorAdapter, validatorAdapter);
+	}
+
+	/**
+	 * Creates a new Float gamerule, able to hold values from {@link Float#MIN_VALUE} to
+	 * {@link Float#MAX_VALUE}, with the provided default value and change callback.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _ -> new", pure = true)
@@ -416,7 +578,21 @@ public class UnruledApi {
 	@NotNull public static Type<FloatRule> createFloat(
 			float initialValue, IGameruleValidator<Float> validator, IGameruleAdapter<Float> adapter
 	) {
-		return FloatRule.create(initialValue);
+		return FloatRule.create(initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Float gamerule, able to hold values from {@link Float#MIN_VALUE} to
+	 * {@link Float#MAX_VALUE}, with the provided default value.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _ -> new", pure = true)
+	@NotNull public static Type<FloatRule> createFloat(
+			float initialValue, GameruleValidatorAdapter<Float> validatorAdapter
+	) {
+		return FloatRule.create(initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -449,6 +625,26 @@ public class UnruledApi {
 			IGameruleValidator<Float> validator, IGameruleAdapter<Float> adapter
 	) {
 		return register(name, category, createFloat(initialValue, changeCallback, validator, adapter));
+	}
+
+	/**
+	 * Creates and register a new Float gamerule, able to hold values from
+	 * {@link Float#MIN_VALUE} to {@link Float#MAX_VALUE}, with the provided
+	 * default value and change callback, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<FloatRule> registerFloat(
+			String name, Category category, float initialValue, BiConsumer<MinecraftServer, FloatRule> changeCallback,
+			GameruleValidatorAdapter<Float> validatorAdapter
+	) {
+		return register(name, category, createFloat(initialValue, changeCallback, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -495,6 +691,23 @@ public class UnruledApi {
 	 * @param name The name of the rule to register.
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's invalid value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<FloatRule> registerFloat(
+			String name, Category category, float initialValue, GameruleValidatorAdapter<Float> validatorAdapter
+	) {
+		return register(name, category, createFloat(initialValue, validatorAdapter, validatorAdapter));
+	}
+
+	/**
+	 * Creates and register a new Float gamerule, able to hold values from
+	 * {@link Float#MIN_VALUE} to {@link Float#MAX_VALUE}, with the provided
+	 * default value, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _ -> new")
@@ -532,7 +745,8 @@ public class UnruledApi {
 	 * @apiNote Better use {@link #register(String, Category, Type)} directly.
 	 */
 	@Contract(value = "_, _ -> new", pure = true)
-	@NotNull public static Type<IntRule> createInt(int initialValue, BiConsumer<MinecraftServer, IntRule> changeCallback) {
+	@NotNull public static Type<IntRule> createInt(int initialValue, BiConsumer<MinecraftServer, IntRule> changeCallback
+	) {
 		return IntRule.create(initialValue, changeCallback);
 	}
 
@@ -567,7 +781,7 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validatorAdapter The new gamerule's validator and adapter
+	 * @param validatorAdapter The new gamerule's value validator and adapter
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _ -> new")
@@ -584,7 +798,7 @@ public class UnruledApi {
 	 * @param name The name of the rule to register.
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validatorAdapter The new gamerule's validator and adapter
+	 * @param validatorAdapter The new gamerule's value validator and adapter
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _ -> new")
@@ -603,8 +817,8 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _ -> new")
@@ -638,8 +852,8 @@ public class UnruledApi {
 	 * @param name The name of the rule to register.
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _ -> new")
@@ -669,8 +883,8 @@ public class UnruledApi {
 	 * {@link Long#MAX_VALUE}, with the provided default value and change callback.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _, _ -> new", pure = true)
@@ -679,6 +893,22 @@ public class UnruledApi {
 			IGameruleValidator<Long> validator, IGameruleAdapter<Long> adapter
 	) {
 		return LongRule.create(initialValue, changeCallback, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Long gamerule, able to hold values from {@link Long#MIN_VALUE} to
+	 * {@link Long#MAX_VALUE}, with the provided default value and change callback.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _ -> new", pure = true)
+	@NotNull public static Type<LongRule> createLong(
+			long initialValue, BiConsumer<MinecraftServer, LongRule> changeCallback,
+			GameruleValidatorAdapter<Long> validatorAdapter
+	) {
+		return LongRule.create(initialValue, changeCallback, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -699,8 +929,8 @@ public class UnruledApi {
 	 * Creates a new Long gamerule, able to hold values from {@link Long#MIN_VALUE} to
 	 * {@link Long#MAX_VALUE}, with the provided default value.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _ -> new", pure = true)
@@ -708,6 +938,20 @@ public class UnruledApi {
 			long initialValue, IGameruleValidator<Long> validator, IGameruleAdapter<Long> adapter
 	) {
 		return LongRule.create(initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Long gamerule, able to hold values from {@link Long#MIN_VALUE} to
+	 * {@link Long#MAX_VALUE}, with the provided default value.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _ -> new", pure = true)
+	@NotNull public static Type<LongRule> createLong(
+			long initialValue, GameruleValidatorAdapter<Long> validatorAdapter
+	) {
+		return LongRule.create(initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -730,8 +974,8 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _ -> new")
@@ -740,6 +984,26 @@ public class UnruledApi {
 			IGameruleValidator<Long> validator, IGameruleAdapter<Long> adapter
 	) {
 		return register(name, category, createLong(initialValue, changeCallback, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Long gamerule, able to hold values
+	 * from {@link Long#MIN_VALUE} to {@link Long#MAX_VALUE}, with
+	 * the provided default value and change callback, at the
+	 * specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<LongRule> registerLong(
+			String name, Category category, long initialValue, BiConsumer<MinecraftServer, LongRule> changeCallback,
+			GameruleValidatorAdapter<Long> validatorAdapter
+	) {
+		return register(name, category, createLong(initialValue, changeCallback, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -768,8 +1032,8 @@ public class UnruledApi {
 	 * @param name The name of the rule to register.
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _ -> new")
@@ -778,6 +1042,24 @@ public class UnruledApi {
 			IGameruleAdapter<Long> adapter
 	) {
 		return register(name, category, createLong(initialValue, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Long gamerule, able to hold values
+	 * from {@link Long#MIN_VALUE} to {@link Long#MAX_VALUE}, with
+	 * the provided default value, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<LongRule> registerLong(
+			String name, Category category, long initialValue, GameruleValidatorAdapter<Long> validatorAdapter
+	) {
+		return register(name, category, createLong(initialValue, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -804,8 +1086,8 @@ public class UnruledApi {
 	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _, _, _ -> new")
@@ -814,6 +1096,26 @@ public class UnruledApi {
 			IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return StringRule.create(maxLength, initialValue, changeCallback, validator, adapter);
+	}
+
+	/**
+	 * Creates a new String gamerule with the specified default value, maximum length
+	 * and change callback.
+	 * <p>
+	 * Warning: string gamerules can only have a maximum length up to 128. To go beyond,
+	 * please look into text gamerules.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _, _ -> new")
+	@NotNull public static Type<StringRule> createString(
+			int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
+			GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return StringRule.create(maxLength, initialValue, changeCallback, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -841,8 +1143,8 @@ public class UnruledApi {
 	 * please look into text gamerules.
 	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _, _ -> new")
@@ -850,6 +1152,23 @@ public class UnruledApi {
 			int maxLength, String initialValue, IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return StringRule.create(maxLength, initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new String gamerule with the specified default value and maximum length.
+	 * <p>
+	 * Warning: string gamerules can only have a maximum length up to 128. To go beyond,
+	 * please look into text gamerules.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _ -> new")
+	@NotNull public static Type<StringRule> createString(
+			int maxLength, String initialValue, GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return StringRule.create(maxLength, initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -874,8 +1193,8 @@ public class UnruledApi {
 	 * please look into text gamerules.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _, _ -> new")
@@ -884,6 +1203,27 @@ public class UnruledApi {
 			IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return StringRule.create(strLen(initialValue, 32), initialValue, changeCallback, validator, adapter);
+	}
+
+	/**
+	 * Creates a new String gamerule with the specified default value and change callback,
+	 * with a maximum length of either 32 or the initial value's length.
+	 * <p>
+	 * Warning: string gamerules can only have a maximum length up to 128. To go beyond,
+	 * please look into text gamerules.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _ -> new")
+	@NotNull public static Type<StringRule> createString(
+			String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
+			GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return StringRule.create(
+				strLen(initialValue, 32), initialValue, changeCallback, validatorAdapter, validatorAdapter
+		);
 	}
 
 	/**
@@ -910,8 +1250,8 @@ public class UnruledApi {
 	 * Warning: string gamerules can only have a maximum length up to 128. To go beyond,
 	 * please look into text gamerules.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _ -> new", pure = true)
@@ -919,6 +1259,23 @@ public class UnruledApi {
 			String initialValue, IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return StringRule.create(strLen(initialValue, 32), initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new String gamerule with the specified default value and with a maximum length of
+	 * either 32 or the initial value's length.
+	 * <p>
+	 * Warning: string gamerules can only have a maximum length up to 128. To go beyond,
+	 * please look into text gamerules.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _ -> new", pure = true)
+	@NotNull public static Type<StringRule> createString(
+			String initialValue, GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return StringRule.create(strLen(initialValue, 32), initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -944,8 +1301,8 @@ public class UnruledApi {
 	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _, _ -> new")
@@ -955,6 +1312,28 @@ public class UnruledApi {
 			IGameruleAdapter<String> adapter
 	) {
 		return register(name, category, createString(maxLength, initialValue, changeCallback, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new String gamerule with the specified default value,
+	 * maximum length and change callback, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerString(
+			String name, Category category, int maxLength, String initialValue,
+			BiConsumer<MinecraftServer, StringRule> changeCallback, GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return register(name, category,
+				createString(maxLength, initialValue, changeCallback, validatorAdapter, validatorAdapter)
+		);
 	}
 
 	/**
@@ -983,8 +1362,8 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _ -> new")
@@ -993,6 +1372,24 @@ public class UnruledApi {
 			IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return register(name, category, createString(initialValue, changeCallback, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new String gamerule with the specified default value
+	 * and change callback, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerString(
+			String name, Category category, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
+			GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return register(name, category, createString(initialValue, changeCallback, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -1018,8 +1415,8 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _ -> new")
@@ -1028,6 +1425,24 @@ public class UnruledApi {
 			IGameruleAdapter<String> adapter
 	) {
 		return register(name, category, createString(maxLength, initialValue, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new String gamerule with the specified default value
+	 * and maximum length, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerString(
+			String name, Category category, int maxLength, String initialValue,
+			GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return register(name, category, createString(maxLength, initialValue, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -1052,8 +1467,8 @@ public class UnruledApi {
 	 * @param name The name of the rule to register.
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _ -> new")
@@ -1062,6 +1477,22 @@ public class UnruledApi {
 			IGameruleAdapter<String> adapter
 	) {
 		return register(name, category, createString(initialValue, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new String gamerule with the specified default value,
+	 * at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerString(
+			String name, Category category, String initialValue, GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return register(name, category, createString(initialValue, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -1083,8 +1514,8 @@ public class UnruledApi {
 	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _, _, _ -> new", pure = true)
@@ -1093,6 +1524,23 @@ public class UnruledApi {
 			IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return StringRule.createText(maxLength, initialValue, changeCallback, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Text gamerule with the specified default value, maximum length
+	 * and change callback.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _, _ -> new", pure = true)
+	@NotNull public static Type<StringRule> createText(
+			int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
+			GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return StringRule.createText(maxLength, initialValue, changeCallback, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -1114,8 +1562,8 @@ public class UnruledApi {
 	 * Creates a new Text gamerule with the specified default value and maximum length.
 	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _, _ -> new", pure = true)
@@ -1123,6 +1571,20 @@ public class UnruledApi {
 			int maxLength, String initialValue, IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return StringRule.createText(maxLength, initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Text gamerule with the specified default value and maximum length.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _ -> new", pure = true)
+	@NotNull public static Type<StringRule> createText(
+			int maxLength, String initialValue, GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return StringRule.createText(maxLength, initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -1141,8 +1603,8 @@ public class UnruledApi {
 	 * with a maximum length of 512.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _, _ -> new", pure = true)
@@ -1151,6 +1613,24 @@ public class UnruledApi {
 			IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return StringRule.createText(strLen(initialValue, 512), initialValue, changeCallback, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Text gamerule with the specified default value and change callback,
+	 * with a maximum length of 512.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _, _ -> new", pure = true)
+	@NotNull public static Type<StringRule> createText(
+			String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
+			GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return StringRule.createText(
+				strLen(initialValue, 512), initialValue, changeCallback, validatorAdapter, validatorAdapter
+		);
 	}
 
 	/**
@@ -1170,8 +1650,8 @@ public class UnruledApi {
 	/**
 	 * Creates a new Text gamerule with the specified default value.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract(value = "_, _, _ -> new", pure = true)
@@ -1179,6 +1659,19 @@ public class UnruledApi {
 			String initialValue, IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return StringRule.createText(strLen(initialValue, 512), initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Text gamerule with the specified default value.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract(value = "_, _ -> new", pure = true)
+	@NotNull public static Type<StringRule> createText(
+			String initialValue, GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return StringRule.createText(strLen(initialValue, 512), initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -1200,8 +1693,8 @@ public class UnruledApi {
 	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _, _ -> new")
@@ -1211,6 +1704,28 @@ public class UnruledApi {
 			IGameruleAdapter<String> adapter
 	) {
 		return register(name, category, createText(maxLength, initialValue, changeCallback, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Text gamerule with the specified default value,
+	 * maximum length and change callback, at the specified name and in the
+	 * specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerText(
+			String name, Category category, int maxLength, String initialValue,
+			BiConsumer<MinecraftServer, StringRule> changeCallback, GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return register(name, category,
+				createText(maxLength, initialValue, changeCallback, validatorAdapter, validatorAdapter)
+		);
 	}
 
 	/**
@@ -1239,8 +1754,8 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _ -> new")
@@ -1249,6 +1764,24 @@ public class UnruledApi {
 			IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
 	) {
 		return register(name, category, createText(initialValue, changeCallback, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Text gamerule with the specified default value
+	 * and change callback, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerText(
+			String name, Category category, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
+			GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return register(name, category, createText(initialValue, changeCallback, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -1274,8 +1807,8 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param maxLength The new gamerule's maximum length.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _ -> new")
@@ -1284,6 +1817,24 @@ public class UnruledApi {
 			IGameruleAdapter<String> adapter
 	) {
 		return register(name, category, createText(maxLength, initialValue, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Text gamerule with the specified default value and
+	 * maximum length, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param maxLength The new gamerule's maximum length.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerText(
+			String name, Category category, int maxLength, String initialValue,
+			GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return register(name, category, createText(maxLength, initialValue, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -1308,8 +1859,8 @@ public class UnruledApi {
 	 * @param name The name of the rule to register.
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _ -> new")
@@ -1318,6 +1869,22 @@ public class UnruledApi {
 			IGameruleAdapter<String> adapter
 	) {
 		return register(name, category, createText(initialValue, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Text gamerule with the specified default value,
+	 * at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<StringRule> registerText(
+			String name, Category category, String initialValue, GameruleValidatorAdapter<String> validatorAdapter
+	) {
+		return register(name, category, createText(initialValue, validatorAdapter, validatorAdapter));
 	}
 
 	/**
@@ -1337,8 +1904,8 @@ public class UnruledApi {
 	 * Creates a new Entity Selector gamerule with the specified default value and change callback.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract("_, _, _, _ -> new")
@@ -1347,6 +1914,21 @@ public class UnruledApi {
 			IGameruleValidator<EntitySelector> validator, IGameruleAdapter<EntitySelector> adapter
 	) {
 		return EntitySelectorRule.create(initialValue, changeCallback, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Entity Selector gamerule with the specified default value and change callback.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract("_, _, _ -> new")
+	@NotNull public static Type<EntitySelectorRule> createEntitySelector(
+			String initialValue, BiConsumer<MinecraftServer, EntitySelectorRule> changeCallback,
+			GameruleValidatorAdapter<EntitySelector> validatorAdapter
+	) {
+		return EntitySelectorRule.create(initialValue, changeCallback, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -1365,8 +1947,8 @@ public class UnruledApi {
 	/**
 	 * Creates a new Entity Selector gamerule with the specified default value.
 	 * @param initialValue The new gamerule's default value.
-	 * @param validator The new gamerule's validator.
-	 * @param adapter The new gamerule's adapter.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The newly created gamerule's reference.
 	 */
 	@Contract("_, _, _ -> new")
@@ -1374,6 +1956,19 @@ public class UnruledApi {
 			String initialValue, IGameruleValidator<EntitySelector> validator, IGameruleAdapter<EntitySelector> adapter
 	) {
 		return EntitySelectorRule.create(initialValue, validator, adapter);
+	}
+
+	/**
+	 * Creates a new Entity Selector gamerule with the specified default value.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The newly created gamerule's reference.
+	 */
+	@Contract("_, _ -> new")
+	@NotNull public static Type<EntitySelectorRule> createEntitySelector(
+			String initialValue, GameruleValidatorAdapter<EntitySelector> validatorAdapter
+	) {
+		return EntitySelectorRule.create(initialValue, validatorAdapter, validatorAdapter);
 	}
 
 	/**
@@ -1393,6 +1988,8 @@ public class UnruledApi {
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
 	 * @param changeCallback The new gamerule's change callback.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _, _ -> new")
@@ -1402,6 +1999,27 @@ public class UnruledApi {
 			IGameruleValidator<EntitySelector> validator, IGameruleAdapter<EntitySelector> adapter
 	) {
 		return register(name, category, createEntitySelector(initialValue, changeCallback, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Entity Selector gamerule with the specified default value
+	 * and change callback, at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param changeCallback The new gamerule's change callback.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _, _ -> new")
+	@NotNull public static Key<EntitySelectorRule> registerEntitySelectorRule(
+			String name, Category category, String initialValue,
+			BiConsumer<MinecraftServer, EntitySelectorRule> changeCallback,
+			GameruleValidatorAdapter<EntitySelector> validatorAdapter
+	) {
+		return register(name, category,
+				createEntitySelector(initialValue, changeCallback, validatorAdapter, validatorAdapter)
+		);
 	}
 
 	/**
@@ -1427,6 +2045,8 @@ public class UnruledApi {
 	 * @param name The name of the rule to register.
 	 * @param category The category in which to register the gamerule.
 	 * @param initialValue The new gamerule's default value.
+	 * @param validator The new gamerule's value validator.
+	 * @param adapter The new gamerule's value adapter.
 	 * @return The new rule registration key.
 	 */
 	@Contract("_, _, _, _, _ -> new")
@@ -1435,6 +2055,23 @@ public class UnruledApi {
 			IGameruleValidator<EntitySelector> validator, IGameruleAdapter<EntitySelector> adapter
 	) {
 		return register(name, category, createEntitySelector(initialValue, validator, adapter));
+	}
+
+	/**
+	 * Creates and registers a new Entity Selector gamerule with the specified default value,
+	 * at the specified name and in the specified category.
+	 * @param name The name of the rule to register.
+	 * @param category The category in which to register the gamerule.
+	 * @param initialValue The new gamerule's default value.
+	 * @param validatorAdapter The new gamerule's value validator and adapter.
+	 * @return The new rule registration key.
+	 */
+	@Contract("_, _, _, _ -> new")
+	@NotNull public static Key<EntitySelectorRule> registerEntitySelectorRule(
+			String name, Category category, String initialValue,
+			GameruleValidatorAdapter<EntitySelector> validatorAdapter
+	) {
+		return register(name, category, createEntitySelector(initialValue, validatorAdapter, validatorAdapter));
 	}
 
 	/**

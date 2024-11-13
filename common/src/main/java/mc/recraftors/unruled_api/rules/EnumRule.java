@@ -22,12 +22,21 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
     private IGameruleValidator<T> validator;
     private IGameruleAdapter<T> adapter;
 
+    private static <U extends Enum<U>> void testValidator(Class<U> c, IGameruleValidator<U> v) {
+        int i = 0;
+        for (U u : c.getEnumConstants()) {
+            if (v.validate(u)) i++;
+        }
+        if (i == 0) throw new UnsupportedOperationException("Validator needs to validate at least one enum entry");
+    }
+
     public EnumRule(GameRules.Type<EnumRule<T>> type, Class<T> targetClass, T initialValue, IGameruleValidator<T> validator, IGameruleAdapter<T> adapter) {
         super(type);
         Objects.requireNonNull(targetClass);
         Objects.requireNonNull(initialValue);
         Objects.requireNonNull(validator);
         Objects.requireNonNull(adapter);
+        testValidator(targetClass, validator);
         this.tClass = targetClass;
         this.value = initialValue;
         this.validator = validator;
@@ -171,7 +180,9 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
 
     @Override
     public void unruled_setValidator(IGameruleValidator<T> validator) {
-        this.validator = Objects.requireNonNull(validator);
+        Objects.requireNonNull(validator);
+        testValidator(this.tClass, validator);
+        this.validator = validator;
     }
 
     @Override
