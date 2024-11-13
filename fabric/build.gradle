@@ -24,11 +24,61 @@ dependencies {
 
 def commonProject = rootProject.project("common")
 
+
+def debugArgs = [
+	"-enableassertions",
+	"-Dmixin.debug.verify=true",
+	//"-Dmixin.debug.strict=true",
+	"-Dmixin.debug.countInjections=true",
+]
+
+sourceSets {
+    test {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += commonProject.sourceSets.test.compileClasspath
+        runtimeClasspath += commonProject.sourceSets.test.runtimeClasspath
+    }
+}
+
 loom {
-    accessWidenerPath = commonProject.file("src/main/resources/${commonProject.mod_id}.accesswidener")
+    accessWidenerPath = commonProject.loom.accessWidenerPath
+    runtimeOnlyLog4j = true
+
+    runs {
+        testClient {
+            client()
+            ideConfigGenerated project.rootProject == project
+            name = "Test Fabric Client"
+            source sourceSets.test
+            vmArgs(debugArgs)
+        }
+        testServer {
+            server()
+            ideConfigGenerated project.rootProject == project
+            name = "Test Forge Server"
+            source sourceSets.test
+            vmArgs(debugArgs)
+        }
+    }
 }
 
 processResources {
+    inputs.properties (
+            "version": project.version,
+            "mod_id": commonProject.mod_id
+    )
+
+    filesMatching("fabric.mod.json") {
+        expand inputs.properties
+    }
+}
+
+processTestResources {
+    from sourceSets.main.resources
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
     inputs.properties (
             "version": project.version,
             "mod_id": commonProject.mod_id

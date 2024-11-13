@@ -19,6 +19,8 @@ subprojects {
         mappings "net.fabricmc:yarn:${rootProject.minecraft_version}+build.${rootProject.yarn_build}:v2"
 
         compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${rootProject.mixinextras_version}"))
+        testRuntimeOnly("dev.architectury:architectury-transformer:5.2.87:agent")
+        testRuntimeOnly("dev.architectury:architectury-transformer:5.2.87:runtime")
     }
 }
 

@@ -26,7 +26,7 @@ dependencies {
 def commonProject = rootProject.project("common")
 
 loom {
-    accessWidenerPath = commonProject.file("src/main/resources/${commonProject.mod_id}.accesswidener")
+    accessWidenerPath = commonProject.loom.accessWidenerPath
 
     forge {
         convertAccessWideners = true

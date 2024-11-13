@@ -9,7 +9,7 @@ architectury {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/${project.mod_id}.accesswidener")
+    accessWidenerPath = file("../fabric/src/main/resources/${project.mod_id}.accesswidener")
 }
 
 publishing {
@@ -23,5 +23,22 @@ publishing {
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
         // Add repositories to publish to here.
+    }
+}
+
+sourceSets {
+    test {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+    }
+}
+
+processResources {
+    inputs.properties(
+            "mod_id": project.mod_id
+    )
+
+    filesMatching("architectury.commons.json") {
+        expand inputs.properties
     }
 }
