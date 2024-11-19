@@ -4,6 +4,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import net.minecraft.server.MinecraftServer;
@@ -50,11 +52,28 @@ public abstract class IntRuleMixin implements GameruleAccessor<Integer> {
         return this.value;
     }
 
-    @WrapOperation(method = "validate", at = @At(value = "INVOKE", target = "Ljava/lang/Integer;parseInt(Ljava/lang/String;)I"))
+    @WrapOperation(method = "validate", at = @At(value = "INVOKE", target = "Ljava/lang/Integer;parseInt(Ljava/lang/String;)I"), require = 0)
     private int validateParseIntWrapper(String s, Operation<Integer> original) {
         int i = original.call(s);
         boolean b = this.unruled_getValidator().validate(i);
         if (b) return i;
+        throw new NumberFormatException();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    @WrapOperation(
+            method = "method_27332",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/brigadier/arguments/ArgumentType;parse(Lcom/mojang/brigadier/StringReader;)Ljava/lang/Object;"
+            ),
+            require = 0,
+            remap = false
+    )
+    private <T> T validateParseIntWrapper(ArgumentType<T> instance, StringReader stringReader, Operation<T> original) {
+        Integer i = (int) original.call(instance, stringReader);
+        boolean b = this.unruled_getValidator().validate(i);
+        if (b) return (T) i;
         throw new NumberFormatException();
     }
 

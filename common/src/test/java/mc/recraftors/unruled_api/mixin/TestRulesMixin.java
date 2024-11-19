@@ -1,6 +1,7 @@
 package mc.recraftors.unruled_api.mixin;
 
 import mc.recraftors.unruled_api.UnruledApi;
+import mc.recraftors.unruled_api.impl.BoundedIntRuleValidatorAdapter;
 import mc.recraftors.unruled_api.impl.OddIntRuleValidatorAdapter;
 import mc.recraftors.unruled_api.impl.RoundingBehaviour;
 import mc.recraftors.unruled_api.test.TestEnum;
@@ -31,5 +32,6 @@ public abstract class TestRulesMixin {
                     default -> e;
                 })
         );
+        UnruledApi.registerInt("test.test4", Category.MOBS, 3, new BoundedIntRuleValidatorAdapter(1, 64));
     }
 }
