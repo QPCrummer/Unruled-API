@@ -3,10 +3,12 @@ package mc.recraftors.unruled_api.rules;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.UnruledApi;
+import mc.recraftors.unruled_api.mixin.GameRuleTypeInvoker;
 import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import mc.recraftors.unruled_api.utils.IGameRulesVisitor;
 import mc.recraftors.unruled_api.utils.IGameruleAdapter;
 import mc.recraftors.unruled_api.utils.IGameruleValidator;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
@@ -36,8 +38,8 @@ public class LongRule extends GameRules.Rule<LongRule> implements GameruleAccess
     }
 
     public static GameRules.Type<LongRule> create(long initialValue, BiConsumer<MinecraftServer, LongRule> changeCallback, IGameruleValidator<Long> validator, IGameruleAdapter<Long> adapter) {
-        return new GameRules.Type<>(LongArgumentType::longArg, type -> new LongRule(type, initialValue, validator, adapter), changeCallback,
-                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitLong(key, cType));
+        return GameRuleTypeInvoker.invokeInit(LongArgumentType::longArg, type -> new LongRule(type, initialValue, validator, adapter), changeCallback,
+                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitLong(key, cType), FeatureSet.empty());
     }
 
     public static GameRules.Type<LongRule> create(long initialValue, BiConsumer<MinecraftServer, LongRule> changeCallback) {

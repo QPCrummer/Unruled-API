@@ -10,6 +10,6 @@ public class UnruledApiClient {
     public static final Identifier SCROLLBAR_HORIZONTAL = guiTexture("scrollbar_horizontal");
 
     public static Identifier guiTexture(String fileName) {
-        return new Identifier(UnruledApi.MOD_ID, "textures/gui/"+UnruledApi.MOD_ID+"/"+fileName+".png");
+        return Identifier.of(UnruledApi.MOD_ID, "textures/gui/" + UnruledApi.MOD_ID + "/" + fileName + ".png");
     }
 }

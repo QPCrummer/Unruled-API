@@ -5,7 +5,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import mc.recraftors.unruled_api.UnruledApi;
+import mc.recraftors.unruled_api.mixin.GameRuleTypeInvoker;
 import mc.recraftors.unruled_api.utils.*;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
@@ -46,13 +48,13 @@ public class StringRule extends GameRules.Rule<StringRule> implements GameruleAc
             int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
             IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
     ) {
-        return new GameRules.Type<>(StringArgumentType::string, type -> new StringRule(type, maxLength, initialValue, validator, adapter), changeCallback,
-                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitString(key, cType));
+        return GameRuleTypeInvoker.invokeInit(StringArgumentType::string, type -> new StringRule(type, maxLength, initialValue, validator, adapter), changeCallback,
+                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitString(key, cType), FeatureSet.empty());
     }
 
     public static GameRules.Type<StringRule> create(int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback) {
-        return new GameRules.Type<>(StringArgumentType::string, type -> new StringRule(type, maxLength, initialValue),
-                changeCallback, (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitString(key, cType));
+        return GameRuleTypeInvoker.invokeInit(StringArgumentType::string, type -> new StringRule(type, maxLength, initialValue),
+                changeCallback, (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitString(key, cType), FeatureSet.empty());
     }
 
     public static GameRules.Type<StringRule> create(
@@ -69,15 +71,15 @@ public class StringRule extends GameRules.Rule<StringRule> implements GameruleAc
             int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback,
             IGameruleValidator<String> validator, IGameruleAdapter<String> adapter
     ) {
-        return new GameRules.Type<>(StringArgumentType::string, type -> new TextRule(type, maxLength, initialValue, validator, adapter),
-                changeCallback, (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitText(key, cType));
+        return GameRuleTypeInvoker.invokeInit(StringArgumentType::string, type -> new TextRule(type, maxLength, initialValue, validator, adapter),
+                changeCallback, (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitText(key, cType), FeatureSet.empty());
     }
 
     public static GameRules.Type<StringRule> createText(
             int maxLength, String initialValue, BiConsumer<MinecraftServer, StringRule> changeCallback
     ) {
-        return new GameRules.Type<>(StringArgumentType::string, type -> new TextRule(type, maxLength, initialValue), changeCallback,
-                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitText(key, cType));
+        return GameRuleTypeInvoker.invokeInit(StringArgumentType::string, type -> new TextRule(type, maxLength, initialValue), changeCallback,
+                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitText(key, cType), FeatureSet.empty());
     }
 
     public static GameRules.Type<StringRule> createText(

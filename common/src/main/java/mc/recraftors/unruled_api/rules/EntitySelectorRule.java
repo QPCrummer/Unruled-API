@@ -3,10 +3,12 @@ package mc.recraftors.unruled_api.rules;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import mc.recraftors.unruled_api.mixin.GameRuleTypeInvoker;
 import mc.recraftors.unruled_api.utils.*;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
@@ -41,13 +43,13 @@ public class EntitySelectorRule extends GameRules.Rule<EntitySelectorRule> imple
             String initialValue, BiConsumer<MinecraftServer, EntitySelectorRule> changeCallback,
             IGameruleValidator<EntitySelector> validator, IGameruleAdapter<EntitySelector> adapter
     ) {
-        return new GameRules.Type<>(EntityArgumentType::entities, type -> new EntitySelectorRule(type, initialValue, validator, adapter),
-                changeCallback, ((consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitEntitySelector(key, cType)));
+        return GameRuleTypeInvoker.invokeInit(EntityArgumentType::entities, type -> new EntitySelectorRule(type, initialValue, validator, adapter),
+                changeCallback, ((consumer, key, cType) -> ((IGameRulesVisitor) consumer).unruled_visitEntitySelector(key, cType)), FeatureSet.empty());
     }
 
     public static GameRules.Type<EntitySelectorRule> create(String initialValue, BiConsumer<MinecraftServer, EntitySelectorRule> changeCallback) {
-        return new GameRules.Type<>(EntityArgumentType::entities, type -> new EntitySelectorRule(type, initialValue), changeCallback,
-                ((consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitEntitySelector(key, cType)));
+        return GameRuleTypeInvoker.invokeInit(EntityArgumentType::entities, type -> new EntitySelectorRule(type, initialValue), changeCallback,
+                ((consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitEntitySelector(key, cType)), FeatureSet.empty());
     }
 
     public static GameRules.Type<EntitySelectorRule> create(
@@ -87,7 +89,7 @@ public class EntitySelectorRule extends GameRules.Rule<EntitySelectorRule> imple
 
     private static EntitySelector parseStr(String s) throws EncapsulatedException {
         try {
-            return new EntitySelectorReader(new StringReader(s)).read();
+            return new EntitySelectorReader(new StringReader(s), true).read(); // TODO See if that should be set to true or false
         } catch (CommandSyntaxException e) {
             throw new EncapsulatedException(e);
         }

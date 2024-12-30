@@ -3,7 +3,9 @@ package mc.recraftors.unruled_api.rules;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.UnruledApi;
+import mc.recraftors.unruled_api.mixin.GameRuleTypeInvoker;
 import mc.recraftors.unruled_api.utils.*;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
@@ -47,9 +49,9 @@ public class EnumRule <T extends Enum<T>> extends GameRules.Rule<EnumRule<T>> im
     public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(
             Class<T> targetClass, T initialValue, BiConsumer<MinecraftServer, EnumRule<T>> changeCallback,
             IGameruleValidator<T> validator, IGameruleAdapter<T> adapter) {
-        return new GameRules.Type<>((EnumArgSupplier<T>) () -> targetClass,
+        return GameRuleTypeInvoker.invokeInit((EnumArgSupplier<T>) () -> targetClass,
                 type -> new EnumRule<>(type, targetClass, initialValue, validator, adapter),
-                changeCallback, ((consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitEnum(key, cType)));
+                changeCallback, ((consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitEnum(key, cType)), FeatureSet.empty());
     }
 
     public static <T extends Enum<T>> GameRules.Type<EnumRule<T>> create(

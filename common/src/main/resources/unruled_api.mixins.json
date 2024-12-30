@@ -9,6 +9,7 @@
     "GameRulesMixin",
     "GameRulesTypeMixin",
     "GameRulesVisitorMixin",
+    "GameRuleTypeInvoker",
     "IntRuleMixin"
   ],
   "client": [

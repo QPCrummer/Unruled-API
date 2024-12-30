@@ -3,10 +3,12 @@ package mc.recraftors.unruled_api.rules;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.UnruledApi;
+import mc.recraftors.unruled_api.mixin.GameRuleTypeInvoker;
 import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import mc.recraftors.unruled_api.utils.IGameRulesVisitor;
 import mc.recraftors.unruled_api.utils.IGameruleAdapter;
 import mc.recraftors.unruled_api.utils.IGameruleValidator;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
@@ -37,8 +39,8 @@ public class DoubleRule extends GameRules.Rule<DoubleRule> implements GameruleAc
 
     public static GameRules.Type<DoubleRule> create(double initialValue, BiConsumer<MinecraftServer, DoubleRule> changeCallback,
                                                     IGameruleValidator<Double> validator, IGameruleAdapter<Double> adapter) {
-        return new GameRules.Type<>(DoubleArgumentType::doubleArg, type -> new DoubleRule(type, initialValue, validator, adapter), changeCallback,
-                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitDouble(key, cType));
+        return GameRuleTypeInvoker.invokeInit(DoubleArgumentType::doubleArg, type -> new DoubleRule(type, initialValue, validator, adapter), changeCallback,
+                (consumer, key, cType) -> ((IGameRulesVisitor) consumer).unruled_visitDouble(key, cType), FeatureSet.empty());
     }
 
     public static GameRules.Type<DoubleRule> create(double initialValue, BiConsumer<MinecraftServer, DoubleRule> changeCallback) {

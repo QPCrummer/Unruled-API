@@ -3,10 +3,12 @@ package mc.recraftors.unruled_api.rules;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.UnruledApi;
+import mc.recraftors.unruled_api.mixin.GameRuleTypeInvoker;
 import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import mc.recraftors.unruled_api.utils.IGameRulesVisitor;
 import mc.recraftors.unruled_api.utils.IGameruleAdapter;
 import mc.recraftors.unruled_api.utils.IGameruleValidator;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
@@ -36,8 +38,8 @@ public class FloatRule extends GameRules.Rule<FloatRule> implements GameruleAcce
     }
 
     public static GameRules.Type<FloatRule> create(float initialValue, BiConsumer<MinecraftServer, FloatRule> changeCallback, IGameruleValidator<Float> validator, IGameruleAdapter<Float> adapter) {
-        return new GameRules.Type<>(FloatArgumentType::floatArg, type -> new FloatRule(type, initialValue, validator, adapter), changeCallback,
-                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitFloat(key, cType));
+        return GameRuleTypeInvoker.invokeInit(FloatArgumentType::floatArg, type -> new FloatRule(type, initialValue, validator, adapter), changeCallback,
+                (consumer, key, cType) -> ((IGameRulesVisitor)consumer).unruled_visitFloat(key, cType), FeatureSet.empty());
     }
 
     public static GameRules.Type<FloatRule> create(float initialValue, BiConsumer<MinecraftServer, FloatRule> changeCallback) {

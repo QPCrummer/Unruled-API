@@ -4,6 +4,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import net.minecraft.server.MinecraftServer;
@@ -50,9 +52,9 @@ public abstract class IntRuleMixin implements GameruleAccessor<Integer> {
         return this.value;
     }
 
-    @WrapOperation(method = "validate", at = @At(value = "INVOKE", target = "Ljava/lang/Integer;parseInt(Ljava/lang/String;)I"))
-    private int validateParseIntWrapper(String s, Operation<Integer> original) {
-        int i = original.call(s);
+    @WrapOperation(method = "validateAndSet", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/arguments/ArgumentType;parse(Lcom/mojang/brigadier/StringReader;)Ljava/lang/Object;"))
+    private Object validateParseIntWrapper(ArgumentType<Integer> instance, StringReader stringReader, Operation<Integer> original) {
+        int i = original.call(instance, stringReader);
         boolean b = this.unruled_getValidator().validate(i);
         if (b) return i;
         throw new NumberFormatException();

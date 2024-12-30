@@ -2,11 +2,13 @@ package mc.recraftors.unruled_api;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import mc.recraftors.unruled_api.impl.GameruleValidatorAdapter;
+import mc.recraftors.unruled_api.mixin.GameRuleTypeInvoker;
 import mc.recraftors.unruled_api.rules.*;
 import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import mc.recraftors.unruled_api.utils.IGameruleAdapter;
 import mc.recraftors.unruled_api.utils.IGameruleValidator;
 import net.minecraft.command.EntitySelector;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameRules;
 import org.apache.logging.log4j.LogManager;
@@ -728,12 +730,13 @@ public class UnruledApi {
 	@NotNull public static Type<IntRule> createInt(
 			int initialValue, BiConsumer<MinecraftServer, IntRule> changeCallback,
 			IGameruleValidator<Integer> validator, IGameruleAdapter<Integer> adapter) {
-		return new Type<>(IntegerArgumentType::integer, type -> {
+		return GameRuleTypeInvoker.invokeInit(IntegerArgumentType::integer, type -> {
 			IntRule rule = new IntRule(type, initialValue);
 			((GameruleAccessor<Integer>)rule).unruled_setValidator(validator);
 			((GameruleAccessor<Integer>)rule).unruled_setAdapter(adapter);
 			return rule;
-		}, changeCallback, Visitor::visitInt);
+		}, changeCallback, Visitor::visitInt,
+				FeatureSet.empty());
 	}
 
 	/**

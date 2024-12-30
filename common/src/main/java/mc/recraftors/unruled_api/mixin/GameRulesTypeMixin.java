@@ -18,7 +18,8 @@ import java.util.function.Supplier;
 
 @Mixin(GameRules.Type.class)
 public abstract class GameRulesTypeMixin {
-    @Shadow @Final private Supplier<ArgumentType<?>> argumentType;
+    @Shadow @Final
+    Supplier<ArgumentType<?>> argumentType;
 
     @Inject(method = "argument", at = @At("RETURN"))
     private void onArgumentHeadSpecialArgHandler(
