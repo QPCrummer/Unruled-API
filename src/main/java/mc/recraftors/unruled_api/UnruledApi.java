@@ -7,6 +7,7 @@ import mc.recraftors.unruled_api.rules.*;
 import mc.recraftors.unruled_api.utils.GameruleAccessor;
 import mc.recraftors.unruled_api.utils.IGameruleAdapter;
 import mc.recraftors.unruled_api.utils.IGameruleValidator;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
@@ -28,7 +29,7 @@ import static net.minecraft.world.GameRules.*;
  * Warning, these methods will <i>create</i> the gamerules, but not register them.
  */
 @SuppressWarnings("unused")
-public class UnruledApi {
+public class UnruledApi implements ModInitializer {
 	public static final String MOD_ID = "unruled_api";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
@@ -2090,5 +2091,9 @@ public class UnruledApi {
 			String name, Category category, String initialValue
 	) {
 		return register(name, category, createEntitySelector(initialValue));
+	}
+
+	@Override
+	public void onInitialize() {
 	}
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "${mod_id}",
+  "id": "unruled_api",
   "version": "${version}",
   "name": "Unruled Api",
   "description": "Expands on the vanilla gamerules to add new gamerules types for other mods to use",
@@ -22,13 +22,20 @@
   "license": "GNU GPL 3.0",
   "icon": "icon.png",
   "environment": "*",
-  "entrypoints": {},
+  "entrypoints": {
+    "client": [
+      "mc.recraftors.unruled_api.UnruledApiClient"
+    ],
+    "main": [
+      "mc.recraftors.unruled_api.UnruledApi"
+    ]
+  },
   "mixins": [
     "unruled_api.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.15.0",
-    "minecraft": ">=1.20"
+    "minecraft": ">=1.21.4"
   },
-  "accessWidener": "${mod_id}.accesswidener"
+  "accessWidener": "unruled_api.accesswidener"
 }
