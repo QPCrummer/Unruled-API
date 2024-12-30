@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Mixin(GameRules.Type.class)
-public abstract class GameRuleTypeInvoker {
+public interface GameRuleTypeInvoker {
     @Invoker("<init>")
     public static <T extends GameRules.Rule<T>> GameRules.Type<T> invokeInit(Supplier<ArgumentType<?>> argumentType, Function<GameRules.Type<T>, T> ruleFactory, BiConsumer<MinecraftServer, T> changeCallback, GameRules.Acceptor<T> ruleAcceptor, FeatureSet requiredFeatures) {
         throw new AssertionError();
